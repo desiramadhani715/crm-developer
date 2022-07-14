@@ -1,0 +1,28 @@
+.namaPT {
+    color: #6F9CD3;
+}
+
+.logo {
+    border-radius: 75px;
+    border: 1px solid grey;
+}
+
+.logo:hover {
+    border-radius: 75px;
+    border: 1px solid #6F9CD3;
+}
+@media screen and (max-width: 767px) {
+    .namaPT {
+        color: white;
+    }
+}
+
+.sidebar-elements span,
+.sidebar-elements .icon,
+.sidebar-elements li {
+    color: white;
+}
+
+.sidebar-elements .icon:hover {
+    color: black;
+}
