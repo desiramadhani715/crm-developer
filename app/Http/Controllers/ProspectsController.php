@@ -908,9 +908,10 @@ class ProspectsController extends Controller
      */
     public function edit($ProspectID)
     {
-        $prospect = prospect::data_prospect($ProspectID);
+        $prospect = prospect::data_prospect2($ProspectID);
 
         $agent = DB::table('Agent')->select('*')->where('KodeProject', $prospect[0]->KodeProject)->get();
+
 
         $provTinggal = demografi::getIDPRov($prospect[0]->TempatTinggalID);
         if(count($provTinggal)==0){
@@ -981,8 +982,23 @@ class ProspectsController extends Controller
             'status' => prospect::data('Status'),
             'source' => prospect::data('SumberData'),
             'ads' => prospect::data('SumberAds'),
+            'KodeAgent' => $prospect[0]->KodeAgent,
+            'NamaAgent' => $prospect[0]->NamaAgent,
+            'NamaSales' => $prospect[0]->NamaSales,
+            'JenisKelamin' => $prospect[0]->JenisKelamin,
+            'GenderID' => $prospect[0]->GenderID,
+            'RangeUsia' => $prospect[0]->RangeUsia,
+            'UsiaID' => $prospect[0]->UsiaID,
+            'TempatTinggalID' => $prospect[0]->TempatTinggalID,
+            'TempatKerjaID' => $prospect[0]->TempatKerjaID,
+            'TipePekerjaan' => $prospect[0]->TipePekerjaan,
+            'PekerjaanID' => $prospect[0]->PekerjaanID,
+            'PenghasilanID' => $prospect[0]->PenghasilanID,
+            'RangePenghasilan' => $prospect[0]->RangePenghasilan,
+            'JenisAds' => $prospect[0]->JenisAds,
         ];
         $prospect2 = json_decode (json_encode ($data), FALSE);
+        
         return view('prospects.update',compact('prospect2','agent'));
     }
 
@@ -1022,8 +1038,8 @@ class ProspectsController extends Controller
                 $namaprospect= strtoupper($request->NamaProspect);
                 $kodeproject= $request->KodeProject;
                 // FCM
-                $this->pushNotif($NextSales[0]->UsernameKP, $kodeproject, $namaprospect);
-                $this->pushNotifKotlin($NextSales[0]->UsernameKP, $kodeproject, $namaprospect);
+                $this->pushNotif($sales[0]->UsernameKP, $kodeproject, $namaprospect);
+                $this->pushNotifKotlin($sales[0]->UsernameKP, $kodeproject, $namaprospect);
     
                 //Send WA
     
@@ -1054,6 +1070,7 @@ class ProspectsController extends Controller
             'KodeAds' => $request->KodeAds,
         ]);
 
+        
         
 
         historysales::create([

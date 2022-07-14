@@ -71,10 +71,16 @@
                     <div class="form-group row">
                       <label class="col-12 col-sm-3 col-form-label text-sm-right" for="KodeAgent" >Agent</label>
                       <div class="col-12 col-sm-8 col-lg-6">
-                        <select name="KodeAgent" id="KodeAgent" class="form-control" required>
-                            <option value="">Pilih</option>
+                        <select name="KodeAgent" id="KodeAgent" class="form-control" required disabled>
+                            @if ($p->KodeAgent != null)
+                                <option value="{{$p->KodeAgent}}">{{$p->NamaAgent}}</option>
+                            @else
+                                <option value="">Pilih</option>
+                            @endif
                             @foreach ($agent as $item)
+                                @if($item->KodeAgent != $p->KodeAgent)
                                 <option value="{{$item->KodeAgent}}">{{$item->NamaAgent}}</option>
+                                @endif
                             @endforeach
                         </select>
                         @error('KodeAgent')
@@ -85,8 +91,12 @@
                     <div class="form-group row">
                       <label class="col-12 col-sm-3 col-form-label text-sm-right" for="KodeSales">Sales</label>
                       <div class="col-12 col-sm-8 col-lg-6">
-                        <select name="KodeSales" id="KodeSales" class="form-control" required>
-                            <option value="">Pilih</option>
+                        <select name="KodeSales" id="KodeSales" class="form-control" required disabled>
+                            @if ($p->KodeSales != null)
+                                <option value="{{$p->KodeSales}}">{{$p->NamaSales}}</option>
+                            @else
+                                <option value="">Pilih</option>
+                            @endif
                         </select>
                         @error('KodeSales')
                             <div class="card-subtitle mt-1 ml-1" style="color: red;">{{ $message }}</div>

@@ -265,7 +265,27 @@ class prospect extends Model
                     ->leftJoin('LevelInput','LevelInput.LevelInputID','=','Prospect.LevelInputID')
                     ->leftJoin('Pekerjaan','Pekerjaan.PekerjaanID','=','Prospect.PekerjaanID')
                     ->leftJoin('Penghasilan','Penghasilan.PenghasilanID','=','Prospect.PenghasilanID')
-                    ->select('Prospect.*','Gender.JenisKelamin','Usia.RangeUsia','Pekerjaan.TipePekerjaan','Penghasilan.RangePenghasilan','SumberData.NamaSumber','SumberAds.JenisAds','HistoryProspect.KodeSales')
+                    ->select('Prospect.*','Gender.JenisKelamin','Usia.RangeUsia','Pekerjaan.TipePekerjaan','Penghasilan.RangePenghasilan','SumberData.NamaSumber','SumberAds.JenisAds','HistoryProspect.*')
+                    ->where('Prospect.ProspectID','=',$ProspectID)
+                    ->get();
+    }
+
+    public static function data_prospect2($ProspectID){
+        return DB::table('Prospect')
+                    ->leftJoin('Fu','Fu.ProspectID','=','Prospect.ProspectID')
+                    ->join('HistoryProspect','HistoryProspect.ProspectID','=','Prospect.ProspectID')
+                    ->leftJoin('tipe_unit','tipe_unit.UnitID','=','Prospect.UnitID')
+                    ->leftJoin('Usia','Usia.UsiaID','=','Prospect.UsiaID')
+                    ->leftJoin('Gender','Gender.GenderID','=','Prospect.GenderID')
+                    ->leftJoin('SumberPlatform','SumberPlatform.KodePlatform','=','Prospect.KodePlatform')
+                    ->leftJoin('SumberData','SumberData.SumberDataID','=','Prospect.SumberDataID')
+                    ->leftJoin('SumberAds','SumberAds.KodeAds','=','Prospect.KodeAds')
+                    ->leftJoin('LevelInput','LevelInput.LevelInputID','=','Prospect.LevelInputID')
+                    ->leftJoin('Pekerjaan','Pekerjaan.PekerjaanID','=','Prospect.PekerjaanID')
+                    ->leftJoin('Penghasilan','Penghasilan.PenghasilanID','=','Prospect.PenghasilanID')
+                    ->leftJoin('Agent','Agent.KodeAgent','=','HistoryProspect.KodeAgent')
+                    ->leftJoin('Sales','Sales.KodeSales','=','HistoryProspect.KodeSales')
+                    ->select('Prospect.*','SumberData.NamaSumber','SumberPlatform.NamaPlatform','Gender.JenisKelamin','Usia.RangeUsia','Pekerjaan.TipePekerjaan','Penghasilan.RangePenghasilan',DB::raw('YEAR(Prospect.AddDate) year, MONTH(Prospect.AddDate) month, DAY(Prospect.AddDate) day'),DB::raw('YEAR(Fu.FuDate) yearFU, MONTH(Fu.FuDate) monthFU, DAY(Fu.FuDate) dayFU'),'HistoryProspect.*','tipe_unit.UnitName','tipe_unit.UnitID','SumberAds.JenisAds', 'Agent.NamaAgent', 'Sales.NamaSales')
                     ->where('Prospect.ProspectID','=',$ProspectID)
                     ->get();
     }
