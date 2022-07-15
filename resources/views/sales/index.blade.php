@@ -215,6 +215,12 @@
                             <div class="col-12 col-md-6 col-lg-6"><label>Sort</label><input class="form-control" style="border-radius: 50px;" type="text" value="{{$item->UrutAgentSales}}" name="UrutAgentSales"></div>
                         </div>
                     </div>
+                    
+                    <div class="form-group mt-2">
+                        <div class="row">
+                            <div class="col"><label>Password</label><input class="form-control mb-2" style="border-radius: 50px;" type="password" value="" placeholder="Change Password" name="PasswordKP"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

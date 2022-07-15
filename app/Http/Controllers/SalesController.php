@@ -318,7 +318,8 @@ class SalesController extends Controller
 
         $sales = sales::where(['KodeSales'=>$KodeSales])->select(['*'])->get();
         User::where(['UsernameKP' => $sales[0]->UsernameKP])->update([
-            'Email' => $request->Email
+            'Email' => $request->Email,
+            'PasswordKP' => bcrypt($request->PasswordKP)
         ]);
 
         return redirect()->back()->with('status','Data berhasil diubah !');
