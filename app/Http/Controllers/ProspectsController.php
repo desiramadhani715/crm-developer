@@ -946,6 +946,7 @@ class ProspectsController extends Controller
         }
 
         $data = new stdClass();
+
         $data->property = [
             'ProspectID' => $prospect[0]->ProspectID,
             'NamaProspect' => $prospect[0]->NamaProspect,
@@ -974,12 +975,15 @@ class ProspectsController extends Controller
             'NamaSumber' => $prospect[0]->NamaSumber,
             'JenisAds' => $prospect[0]->JenisAds,
             'KodeProject' => $prospect[0]->KodeProject,
+            'unit' => prospect::get_unit($prospect[0]->KodeProject),
             'gender' => prospect::data('Gender'),
             'usia' => prospect::data('Usia'),
             'provinsi' => prospect::data('Provinsi'),
             'pekerjaan' => prospect::data('Pekerjaan'),
             'penghasilan' => prospect::data('Penghasilan'),
-            'status' => prospect::data('Status'),
+            'notinterest' => prospect::data('NotInterested'),
+            'status' =>  DB::table('Status')->where('KetStatus','!=','New')->where('KetStatus','!=','Expired')->get(),
+            'Status' => $prospect[0]->Status,
             'source' => prospect::data('SumberData'),
             'ads' => prospect::data('SumberAds'),
             'KodeAgent' => $prospect[0]->KodeAgent,
@@ -997,7 +1001,10 @@ class ProspectsController extends Controller
             'RangePenghasilan' => $prospect[0]->RangePenghasilan,
             'JenisAds' => $prospect[0]->JenisAds,
         ];
+
         $prospect2 = json_decode (json_encode ($data), FALSE);
+
+        // dd($prospect2);
         
         return view('prospects.update',compact('prospect2','agent'));
     }
@@ -1054,10 +1061,41 @@ class ProspectsController extends Controller
             }
             
         }
+
+        if($request->NotInterestedID != 0){
+            Prospect::where(['ProspectID' => $ProspectID])->update([
+                'Hot' => 0
+            ]);
+            historyprospect::where(['ProspectID'=>$ProspectID])->update([
+                'NotInterestedDate' => date('Y-m-d H:i:s')
+            ]);
+        }
+        if($request->UnitID != 0){
+            Prospect::where(['ProspectID' => $ProspectID])->update([
+                'Hot' => 0
+            ]);
+            historyprospect::where(['ProspectID'=>$ProspectID])->update([
+                'UnitID' => $request->UnitID,
+                'Unit' =>$request->KetUnit,
+                'ClosingAmount' => $request->HargaJual,
+                'ClosingDate' => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        if($request->Status == 'Process'){
+            historyprospect::where(['ProspectID'=>$ProspectID])->update([
+                'UnitID' => 0,
+                'Unit' => "",
+                'ClosingAmount' => "",
+                'ClosingDate' => "",
+                'NotInterestedDate' => "",
+            ]);
+        }
         
         prospect::where(['ProspectID' => $ProspectID])->update([
             'NamaProspect' => $request->NamaProspect,
             'EmailProspect' => $request->EmailProspect,
+            'Status' => $request->Status,
             'Hp' => $request->Hp,
             'GenderID' => $request->GenderID,
             'UsiaID' => $request->UsiaID,
@@ -1068,10 +1106,10 @@ class ProspectsController extends Controller
             'KodeProject' => $request->KodeProject,
             'SumberDataID' => $request->SumberDataID,
             'KodeAds' => $request->KodeAds,
+            'NotInterestedID' => $request->NotInterestedID,
+            'UnitID' => $request->UnitID,
         ]);
 
-        
-        
 
         historysales::create([
             'KodeSales'=> $request->KodeSales,

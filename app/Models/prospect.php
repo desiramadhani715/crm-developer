@@ -406,5 +406,12 @@ class prospect extends Model
                     ->get();
     }
 
+    public static function get_unit($KodeProject){
+        return DB::table('tipe_unit')
+                    ->select('UnitID','UnitName')
+                    ->where('ProjectCode','=',$KodeProject)
+                    ->get();
+    }
+
 
 }

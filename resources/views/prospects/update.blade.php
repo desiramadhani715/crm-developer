@@ -62,6 +62,57 @@
                     </div>
                     </div>
                     <div class="form-group row">
+                    <label class="col-12 col-sm-3 col-form-label text-sm-right" for="Status">Status</label>
+                    <div class="col-12 col-sm-8 col-lg-6">
+                        <select name="Status" id="Status" class="form-control" required>
+                            <option value="{{$p->Status}}">{{$p->Status}}</option>
+                            @foreach ($p->status as $item)
+                                @if($item->KetStatus != $p->Status)
+                                <option value="{{$item->KetStatus}}">{{$item->KetStatus}}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+                    </div>
+                    <div id="NotInterestedID" style="display: none" id="NotInterestedID">
+                        <div class="form-group row">
+                        <label class="col-12 col-sm-3 col-form-label text-sm-right" for="NotInterestedID">Not Interested</label>
+                        <div class="col-12 col-sm-8 col-lg-6">
+                            <select name="NotInterestedID"  class="form-control" required>
+                                <option value="0">Pilih Alasan</option>
+                                @foreach ($p->notinterest as $item)
+                                    <option value="{{$item->NotInterestedID}}">{{$item->Alasan}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        </div>
+                    </div>
+                    <div id="Closing" style="display: none" id="Closing">
+                        <div class="form-group row" >
+                            <label class="col-12 col-sm-3 col-form-label text-sm-right" for="UnitID">Unit Type</label>
+                            <div class="col-12 col-sm-8 col-lg-6">
+                                <select name="UnitID"  class="form-control" required>
+                                    <option value="0">Pilih Unit Type</option>
+                                    @foreach ($p->unit as $item)
+                                        <option value="{{$item->UnitID}}">{{$item->UnitName}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" >
+                            <label class="col-12 col-sm-3 col-form-label text-sm-right">Keterangan Unit</label>
+                            <div class="col-12 col-sm-8 col-lg-6">
+                                <input type="text" class="form-control" value="" name="KetUnit">
+                            </div>
+                        </div>
+                        <div class="form-group row" >
+                            <label class="col-12 col-sm-3 col-form-label text-sm-right">Harga Jual</label>
+                            <div class="col-12 col-sm-8 col-lg-6">
+                                <input type="number" class="form-control" value="" id="ClosingAmount" name="HargaJual">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                     <label class="col-12 col-sm-3 col-form-label text-sm-right" for="Message" >Pesan</label>
                     <div class="col-12 col-sm-8 col-lg-6">
                         <textarea class="form-control" id="Message" name="Message" rows="5" value="{{$p->Message}}" disabled></textarea>
@@ -364,5 +415,17 @@
                 $("#KodeSales").empty();
             }
         });
+
+    $('#Status').change(function(){
+        var st = $(this).val();
+        if(st === 'Closing'){
+            document.getElementById('NotInterestedID').style.display = 'none';
+            document.getElementById('Closing').style.display = 'block';
+        }
+        if(st === 'Not Interested'){
+            document.getElementById('Closing').style.display = 'none';
+            document.getElementById('NotInterestedID').style.display = 'block';
+        }
+    });
 </script>
 @endsection
