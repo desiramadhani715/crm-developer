@@ -197,6 +197,7 @@ class HomeController extends Controller
         $expired = historyprospect::get_expired();
         $history = historysales::history();
 
+
         //  dd($history);
         return view('index',compact(
             'data',

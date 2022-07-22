@@ -426,6 +426,10 @@
             document.getElementById('Closing').style.display = 'none';
             document.getElementById('NotInterestedID').style.display = 'block';
         }
+        if(st == 'Process'){
+            document.getElementById('Closing').style.display = 'none';
+            document.getElementById('NotInterestedID').style.display = 'none';
+        }
     });
 </script>
 @endsection

@@ -89,7 +89,7 @@
       </div>
     </div>
      {{-- plugin  --}}
-     <div class="row">
+    <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-header card-header-divider">
@@ -149,7 +149,8 @@
           </div>
         </div>
       </div>
-     <div class="row">
+     
+      <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-header card-header-divider">
@@ -202,6 +203,7 @@
             </div>
         </div>
     </div>
+    
     @foreach ($data as $item)
     <div class="row">
         <div class="col-12 col-lg-12 col-xl-12">

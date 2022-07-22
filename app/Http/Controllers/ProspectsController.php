@@ -1146,7 +1146,7 @@ class ProspectsController extends Controller
     }
 
     public function prospect_sales_move(Request $request){
-        // dd($request);
+        
         $prospectID= $request->prospect;
         $move = sales::where(['KodeSales'=>$request->KodeSalesNext])->select('KodeAgent','KodeProject','UrutAgentSales','KodeSales','NamaSales')->get();
         $movePrev = sales::where(['KodeSales'=>$request->KodeSalesPrev])->select('KodeAgent','UrutAgentSales','KodeSales','NamaSales')->get();

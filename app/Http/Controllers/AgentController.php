@@ -334,7 +334,7 @@ class AgentController extends Controller
 
         if ($request->PasswordKP) {
             User::where(['UsernameKP' => $agent[0]->UsernameKP])->update([
-                'PasswordKP' => md5($request->PasswordKP),
+                'PasswordKP' => bcrypt($request->PasswordKP),
             ]);
         }
 

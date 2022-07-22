@@ -74,7 +74,8 @@
                               </select>
                           </div>
                           <div class="col-8 col-sm-5 col-lg-10 ">
-                              <input class="form-control" id="Hp" type="number" placeholder="cth : 08123456789" name="Hp" value="{{ old('Hp')}}">
+                              <input class="form-control" id="Hp" type="number" placeholder="Contoh : 08123456789" name="Hp" value="{{ old('Hp')}}">
+                              <span style="font-size: 11px;color:gray;">*Sertakan angka 0 di depan no.hp</span>
                           </div>
                       </div>
                     @error('Hp')

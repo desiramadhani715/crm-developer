@@ -89,8 +89,9 @@
                                             <tr class="text-center">
                                                 <th class="">
                                                     <div class="d-flex align-items-center">
-                                                        <input class="form-check-input "  type="checkbox"  id="checkAll"><br></th>
+                                                        <input class="form-check-input "  type="checkbox"  id="checkAll"><br>
                                                     </div>
+                                                </th>
                                                 <th>No</th>
                                                 <th>ID</th>
                                                 <th>Nama & No. Hp</th>

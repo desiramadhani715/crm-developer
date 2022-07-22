@@ -189,6 +189,11 @@
                                 <table class="table table-striped table-hover be-table-responsive table-responsive " id="table1" border="1px">
                                     <thead>
                                         <tr class="text-center">
+                                            <th class="">
+                                                <div class="d-flex align-items-center">
+                                                    <input class="form-check-input "  type="checkbox"  id="checkAll"><br>
+                                                </div>
+                                            </th>
                                             <th>No</th>
                                             <th>ID</th>
                                             <th>Nama & No. Hp</th>
@@ -224,6 +229,7 @@
                                         @elseif($item->Status == 'Not Interested')
                                         <tr style="border-left: red solid 16px;">
                                         @endif
+                                            <td><input class="form-check-input" type="checkbox" value="{{$item->ProspectID}}" name="prospect[]" ><br></td>
                                             <td class="text-center">{{$loop->iteration}}</td>
                                             <td class="text-center">{{$item->ProspectID}}</td>
                                             <td class="text-left">
@@ -330,6 +336,7 @@
             App.dataTables();
 
         });
+        
         $.fn.niftyModal('setDefaults',{
             overlaySelector: '.modal-overlay',
             contentSelector: '.modal-content',
@@ -383,6 +390,10 @@
             }else{
                 $("#KodeSales").empty();
             }
+        });
+        
+        $("#checkAll").change(function(){
+            $('input:checkbox').not(this).prop('checked', this.checked);
         });
     </script>
 
