@@ -61,7 +61,7 @@
                 <div class="form-group row">
                   <label class="col-12 col-sm-3 col-form-label text-sm-right" for="Email">Email</label>
                   <div class="col-12 col-sm-8 col-lg-6">
-                    <input class="form-control" id="Email" type="email" name="Email" placeholder="you@example.com" value="{{old('Email')}}">
+                    <input class="form-control" id="Email" type="email" name="Email" placeholder="you@example.com" value="{{old('Email')}}" required>
                     @error('Email')
                         <div class="card-subtitle mt-1 ml-1" style="color: red;">{{ $message }}</div>
                     @enderror

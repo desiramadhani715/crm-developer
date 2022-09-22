@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\projectagent;
 use App\Models\historysales;
 use Illuminate\Support\Facades\DB;
+use App\Mail\MakutaproMail;
+use Illuminate\Support\Facades\Mail;
 
 class SalesController extends Controller
 {
@@ -157,11 +159,15 @@ class SalesController extends Controller
 
 
         $UrutAgentSales = sales::get_urut_agent_sales($KodeAgent);
-        if(count($UrutAgentSales) == 0){
+        // dd(count($UrutAgentSales), $UrutAgentSales);
+
+        if($UrutAgentSales[0]->UrutAgentSales < 1){
             $UrutAgentSales = 0;
         }else{
             $UrutAgentSales = $UrutAgentSales[0]->UrutAgentSales;
         }
+        // dd( $projectAgent,$UrutAgentSales);
+
 
         // USERNAME AND PASS GENERATE
         $namaProject = project::select('NamaProject')->where('KodeProject','=',$projectAgent[0]->KodeProject)->get();
@@ -245,7 +251,16 @@ class SalesController extends Controller
         $api_url .= "&text=". urlencode ($message);
         $my_result_object = json_decode(file_get_contents($api_url, false));
 
-        // Mail::to($request->Email)->send(new MakutaproEmail($nama, $Agent->Pic, $project->NamaProject, $username, $password));
+        $data = [
+            'nama'=> $nama,
+            'pic' => $Agent->Pic,
+            'project' => $project->NamaProject,
+            'username' => $username,
+            'pass' => $password,
+            'link' => $link 
+        ];
+
+        Mail::to($request->Email)->send(new MakutaproMail($data));
         
         return redirect('/agent/sales/'.$KodeAgent)->with('status','Success !');
     }

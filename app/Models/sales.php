@@ -17,8 +17,9 @@ class sales extends Model
 
     public static function get_data_sales($KodeAgent){
         return DB::table('Sales')
-                    ->leftJoin('User','User.UsernameKP','=','Sales.UsernameKP')
-                    ->select('Sales.*','User.Email','User.Active')
+                    // ->leftJoin('User','User.UsernameKP','=','Sales.UsernameKP')
+                    // ->select('Sales.*','User.Email','User.Active')
+                    ->select('Sales.*')
                     ->groupBy('Sales.KodeSales')
                     ->where('Sales.KodeAgent','=',$KodeAgent)
                     ->orderBy('Sales.UrutAgentSales','desc')

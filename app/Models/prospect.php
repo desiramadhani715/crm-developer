@@ -56,6 +56,7 @@ class prospect extends Model
         }
         $query->select('Prospect.*','NotInterested.Alasan','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales',DB::raw('DATE(Prospect.AddDate) AddDate'),DB::raw('DATE(Prospect.EditDate) EditDate'));
         $query->where('PT.UsernameKP','=',Auth::User()->UsernameKP);
+        $query->orderBy('Prospect.ProspectID','desc');
        return $query->get();
 
     }
@@ -246,16 +247,13 @@ class prospect extends Model
                     ->groupBy('year','month','day')
                     ->orderBy('Prospect.ProspectID')
                     ->get();
-
     }
-
-
 
     public static function data($data){
         return DB::table($data)->select('*')->get();
     }
 
-     public static function data_prospect($ProspectID){
+    public static function data_prospect($ProspectID){
         return DB::table('Prospect')
                     ->join('HistoryProspect','HistoryProspect.ProspectID','=','Prospect.ProspectID')
                     ->leftJoin('Usia','Usia.UsiaID','=','Prospect.UsiaID')
@@ -319,14 +317,17 @@ class prospect extends Model
 
 
     public static function get_new_prospect(){
-        return DB::table('Prospect')
+        $query = DB::table('Prospect')
                     ->join('PT','PT.KodePT','=','Prospect.KodePT')
                     ->join('HistoryProspect','HistoryProspect.ProspectID','Prospect.ProspectID')
                     ->select('Prospect.*','HistoryProspect.MoveDate')
                     ->where('PT.UsernameKP','=',Auth::User()->UsernameKP)
-                    ->where('Prospect.Status','=','New')
-                    ->where('Prospect.VerifiedStatus','=',1)
-                    ->get();
+                    ->where('Prospect.VerifiedStatus','=',1);
+                    $query->where(function ($query) {
+                        $query->where('Prospect.Status','=','New')
+                        ->orWhere('Prospect.Status','=','Expired');
+                    });
+        return $query->get();
     }
 
     // SPARKLINE CHART

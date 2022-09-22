@@ -186,6 +186,8 @@
                         </div>
                         <div class="noSwipe">
                             <div class="container-fluid py-2 ">
+                                {{-- <form action="{{url('prospects/delete')}}" method="post">
+                                    @csrf --}}
                                 <table class="table table-striped table-hover be-table-responsive table-responsive " id="table1" border="1px">
                                     <thead>
                                         <tr class="text-center">
@@ -210,91 +212,94 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($prospect as $item)
-                                        @if ($item->Status == 'New')
-                                            @if ($item->VerifiedStatus == 0)
-                                            <tr style="background-color:rgb(71, 149, 238, 0.5);">
-                                            @else
-                                            <tr style="border-left: rgb(71, 149, 238) solid 16px;">
-
+                                            @foreach ($prospect as $item)
+                                            @if ($item->Status == 'New')
+                                                @if ($item->VerifiedStatus == 0)
+                                                <tr style="background-color:rgb(71, 149, 238, 0.5);">
+                                                @else
+                                                <tr style="border-left: rgb(71, 149, 238) solid 16px;">
+    
+                                                @endif
+                                            @elseif($item->Status == 'Closing')
+                                            <tr style="border-left: rgb(2, 185, 57) solid 16px;">
+                                            @elseif($item->Status == 'Expired')
+                                            <tr style="border-left: rgb(233, 140, 34) solid 16px;">
+                                            @elseif($item->Status == 'Process' and $item->Hot == 0)
+                                            <tr style="border-left: rgb(214, 113, 201) solid 16px;">
+                                            @elseif($item->Status == 'Process' and $item->Hot == 1)
+                                            <tr style="border-left: #4B0082 solid 16px;">
+                                            @elseif($item->Status == 'Not Interested')
+                                            <tr style="border-left: red solid 16px;">
                                             @endif
-                                        @elseif($item->Status == 'Closing')
-                                        <tr style="border-left: rgb(2, 185, 57) solid 16px;">
-                                        @elseif($item->Status == 'Expired')
-                                        <tr style="border-left: rgb(233, 140, 34) solid 16px;">
-                                        @elseif($item->Status == 'Process' and $item->Hot == 0)
-                                        <tr style="border-left: rgb(214, 113, 201) solid 16px;">
-                                        @elseif($item->Status == 'Process' and $item->Hot == 1)
-                                        <tr style="border-left: #4B0082 solid 16px;">
-                                        @elseif($item->Status == 'Not Interested')
-                                        <tr style="border-left: red solid 16px;">
-                                        @endif
-                                            <td><input class="form-check-input" type="checkbox" value="{{$item->ProspectID}}" name="prospect[]" ><br></td>
-                                            <td class="text-center">{{$loop->iteration}}</td>
-                                            <td class="text-center">{{$item->ProspectID}}</td>
-                                            <td class="text-left">
-                                                <span>{{$item->NamaProspect}}</span><br><a href="https://api.whatsapp.com/send?phone={{substr($item->KodeNegara, 1)}}{{substr($item->Hp, 1)}}" target="_blank"><span class="card-subtitle" style="color:#6F9CD3">{{$item->Hp}}</span></a>
-                                            </td>
-                                            <td class="text-center">
-                                                <span>{{$item->NamaSumber}}</span><br><span class="card-subtitle">{{$item->NoteSumberData}}</span>
-                                            </td>
-                                            <td class="text-center">{{$item->NamaPlatform}}</td>
-                                            <td class="text-center">{{$item->Campaign}}</td>
-                                            <td class="text-center" data-project="{{$item->KodeProject}}">{{$item->KodeProject}}</td>
-                                            <td class="text-left">
-                                                <span style="color:#6F9CD3">{{$item->KodeAgent}}</span><br><span class="card-subtitle">{{$item->NamaSales}}</span>
-                                            </td>
-                                            <td class="text-center">{{$item->Status}} <br><small class="card-subtitle" style="font-size: 11px;">{{!empty($item->Alasan) ? $item->Alasan : ''}}</small></td>
-                                            <td class="text-center">{{date_format(date_create($item->AddDate), "d/m/Y H:i:s")}}</td>
-                                            <td class="text-center">{{$item->Status == "New" || $item->Status == "Expired" ? "" : date('d-m-Y', strtotime($item->AcceptDate))}}</td>
-                                            <td class="text-center">
-                                                <span style="color:#6F9CD3">{{$item->UnitName}}</span><br><span class="card-subtitle">{{$item->ClosingDate == "0000-00-00 00:00:00" || $item->ClosingDate == null ? "" : date('d-m-Y', strtotime($item->ClosingDate))}}</span>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="d-flex justify-content-start">
-                                                    <a href="{{url('prospects/edit/'.$item->ProspectID)}}"><button class="btn btn-rounded md-trigger mr-1" style="background-color: #2A3F54;color:#fff;"><i class="fa fa-eye"></i></button></a>
-                                                    <form action="{{url('prospects/'.$item->ProspectID)}}" method="post" onsubmit="return confirm('Apakah anda yakin ?')">
-                                                        @method('delete')
-                                                        @csrf
-                                                        <button class="btn btn-rounded mr-1" style="background-color: #8A0512; color :#fff;" type="submit"><i class="fa fa-trash"></i></button>
-                                                    </form>
-
-                                                    <a href="{{url('prospect/history?ProspectID='.$item->ProspectID)}}"><button class="btn btn-rounded md-trigger mr-1 history" style="background-color: #fb8c2e;color:#fff;" data-modal="{{$item->ProspectID}}" id="{{$item->ProspectID}}" ><i class="fa fa-history"></i></button></a>
-
-                                                    @if ($item->CatatanSales != null)
-                                                    <button class="btn btn-rounded md-trigger mr-1" style="background-color: #FB8C2E;color:#fff;" data-modal="Catatan-{{$item->ProspectID}}"><i class="fa fa-sticky-note"></i></button>
-                                                    @endif
-
-                                                    @if ($item->VerifiedStatus == 0)
-                                                    <form action="{{url('prospect/verifikasi/'.$item->ProspectID)}}" method="post" onsubmit="return confirm('Apakah anda yakin ?')">
-                                                        @csrf
-                                                        <button class="btn btn-rounded md-trigger mr-1" style="background-color: #fff;color:#588ac7;font-size:18px;" title="Verifikasi Prospect"><i class="fa fa-check-circle-o"></i></button>
-                                                    </form>
-                                                    @endif
-                                                </div>
-
-                                                {{-- Catatan Sales Modal --}}
-                                                <div class=" modal-container colored-header colored-header-primary custom-width modal-effect-9" id="Catatan-{{$item->ProspectID}}">
-                                                    <div class="modal-content" style="border-radius: 40px;">
-                                                        <div class="modal-header modal-header-colored" style="background-color: #6F9CD3; ">
-                                                            <h2 class="modal-title" style="font-family: Montserrat ,
-                                                            sans-serif Medium 500; font-size: 25px;"><strong>MAKUTA</strong> Pro</h2>
-                                                            <button class="close modal-close" type="button" data-dismiss="modal" aria-hidden="true"><span class="mdi mdi-close"></span></button>
-                                                        </div>
-                                                        <div class="row" style="background-color: #EEE">
-                                                            <div class="col">
-                                                                <h4 class="text-left ml-3" style="color: #FB8C2E"><strong>Catatan Sales</strong></h4>
-                                                            </div>
-                                                        </div>
-                                                        <textarea class="form-control" cols="30" rows="8" disabled>{{$item->CatatanSales}}</textarea>
+                                                <td><input class="form-check-input" type="checkbox" value="{{$item->ProspectID}}" name="prospect[]" ><br></td>
+                                                <td class="text-center">{{$loop->iteration}}</td>
+                                                <td class="text-center">{{$item->ProspectID}}</td>
+                                                <td class="text-left">
+                                                    <span>{{$item->NamaProspect}}</span><br><a href="https://api.whatsapp.com/send?phone={{substr($item->KodeNegara, 1)}}{{substr($item->Hp, 1)}}" target="_blank"><span class="card-subtitle" style="color:#6F9CD3">{{$item->Hp}}</span></a>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span>{{$item->NamaSumber}}</span><br><span class="card-subtitle">{{$item->NoteSumberData}}</span>
+                                                </td>
+                                                <td class="text-center">{{$item->NamaPlatform}}</td>
+                                                <td class="text-center">{{$item->Campaign}}</td>
+                                                <td class="text-center" data-project="{{$item->KodeProject}}">{{$item->KodeProject}}</td>
+                                                <td class="text-left">
+                                                    <span style="color:#6F9CD3">{{$item->KodeAgent}}</span><br><span class="card-subtitle">{{$item->NamaSales}}</span>
+                                                </td>
+                                                <td class="text-center">{{$item->Status}} <br><small class="card-subtitle" style="font-size: 11px;">{{!empty($item->Alasan) ? $item->Alasan : ''}}</small></td>
+                                                <td class="text-center">{{date_format(date_create($item->AddDate), "d/m/Y H:i:s")}}</td>
+                                                <td class="text-center">{{$item->Status == "New" || $item->Status == "Expired" ? "" : date('d-m-Y', strtotime($item->AcceptDate))}}</td>
+                                                <td class="text-center">
+                                                    <span style="color:#6F9CD3">{{$item->UnitName}}</span><br><span class="card-subtitle">{{$item->ClosingDate == "0000-00-00 00:00:00" || $item->ClosingDate == null ? "" : date('d-m-Y', strtotime($item->ClosingDate))}}</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="d-flex justify-content-start">
+                                                        <a href="{{url('prospects/edit/'.$item->ProspectID)}}"><button class="btn btn-rounded md-trigger mr-1" style="background-color: #2A3F54;color:#fff;"><i class="fa fa-eye"></i></button></a>
+                                                        <form action="{{url('prospects/'.$item->ProspectID)}}" method="post" onsubmit="return confirm('Apakah anda yakin ?')">
+                                                            @method('delete')
+                                                            @csrf
+                                                            <button class="btn btn-rounded mr-1" style="background-color: #8A0512; color :#fff;" type="submit"><i class="fa fa-trash"></i></button>
+                                                        </form>
+    
+                                                        <a href="{{url('prospect/history?ProspectID='.$item->ProspectID)}}"><button class="btn btn-rounded md-trigger mr-1 history" style="background-color: #fb8c2e;color:#fff;" data-modal="{{$item->ProspectID}}" id="{{$item->ProspectID}}" ><i class="fa fa-history"></i></button></a>
+    
+                                                        @if ($item->CatatanSales != null)
+                                                        <button class="btn btn-rounded md-trigger mr-1" style="background-color: #FB8C2E;color:#fff;" data-modal="Catatan-{{$item->ProspectID}}"><i class="fa fa-sticky-note"></i></button>
+                                                        @endif
+    
+                                                        @if ($item->VerifiedStatus == 0)
+                                                        <form action="{{url('prospect/verifikasi/'.$item->ProspectID)}}" method="post" onsubmit="return confirm('Apakah anda yakin ?')">
+                                                            @csrf
+                                                            <button class="btn btn-rounded md-trigger mr-1" style="background-color: #fff;color:#588ac7;font-size:18px;" title="Verifikasi Prospect"><i class="fa fa-check-circle-o"></i></button>
+                                                        </form>
+                                                        @endif
                                                     </div>
-                                                </div>
-                                                {{-- End Catatan Sales Modal --}}
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+    
+                                                    {{-- Catatan Sales Modal --}}
+                                                    <div class=" modal-container colored-header colored-header-primary custom-width modal-effect-9" id="Catatan-{{$item->ProspectID}}">
+                                                        <div class="modal-content" style="border-radius: 40px;">
+                                                            <div class="modal-header modal-header-colored" style="background-color: #6F9CD3; ">
+                                                                <h2 class="modal-title" style="font-family: Montserrat ,
+                                                                sans-serif Medium 500; font-size: 25px;"><strong>MAKUTA</strong> Pro</h2>
+                                                                <button class="close modal-close" type="button" data-dismiss="modal" aria-hidden="true"><span class="mdi mdi-close"></span></button>
+                                                            </div>
+                                                            <div class="row" style="background-color: #EEE">
+                                                                <div class="col">
+                                                                    <h4 class="text-left ml-3" style="color: #FB8C2E"><strong>Catatan Sales</strong></h4>
+                                                                </div>
+                                                            </div>
+                                                            <textarea class="form-control" cols="30" rows="8" disabled>{{$item->CatatanSales}}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    {{-- End Catatan Sales Modal --}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                    {{-- <button class="btn btn-space btn-secondary" style="background-color: #2A3F54;color:#fff;" type="submit" ><i class="fa fa-trash"></i> </button>
+
+                                </form> --}}
                             </div>
                         </div>
 

@@ -403,7 +403,8 @@
                 type: 'bar'
             },
             title: {
-                text: 'Prospect by Platform'
+                text: 'Prospect by Platform',
+                
             },
             subtitle: {
                 text: '{{Auth::user()->NamaPT}}'

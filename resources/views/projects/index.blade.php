@@ -16,7 +16,9 @@
     <div class="page-head">
         <div class="d-flex justify-content-between">
             <h2 class="page-head-title">Data Project</h2>
+            @if (Auth::user()->UsernameKP != 'panenproperty')
             <a href="{{url('projects/create')}}"><button class="btn btn-space " style="background-color: #2A3F54;color:#fff;"><i class="icon icon-left mdi mdi-plus-circle-o"></i>Add New</button></a>
+            @endif
         </div>
         <nav aria-label="breadcrumb" role="navigation">
             <ol class="breadcrumb page-head-nav">
@@ -28,14 +30,14 @@
     <div class="main-content container-fluid">
         <div class="row">
             <div class="col-sm-12">
-                @if (session('status'))
+                {{-- @if (session('status'))
                   <div class="alert alert-contrast alert-success alert-dismissible" role="alert">
                     <div class="icon"><span class="mdi mdi-check"></span></div>
                     <div class="message">
                       <button class="close" type="button" data-dismiss="alert" aria-label="Close"><span class="mdi mdi-close" aria-hidden="true"></span></button><strong>{{ session('status') }} </strong></div>
                     </div>
                   </div>
-                @endif
+                @endif --}}
                 <div class="card card-table">
                     <div class="card-header">Data Project
                     </div>
@@ -58,12 +60,17 @@
                                         <td>{{$item->NamaProject}}</td>
                                         <td>
                                             <div class="d-flex justify-content-center">
-                                                <a href="projects/details/{{$item->KodeProject}}"><button class="btn btn-rounded md-trigger mr-1" style="background-color: #2A3F54;color:#fff;"><i class="fa fa-eye"></i></button></a>
+                                                <a href="projects/details/{{$item->KodeProject}}">
+                                                    <img src="{{asset('button/eye.png')}}"  title="Detail">
+                                                </a>
                                                 <form action="{{url('projects/'.$item->KodeProject)}}" method="post" onsubmit="return confirm('Apakah anda yakin ?')">
                                                     @method('delete')
                                                     @csrf
-                                                    <button class="btn btn-rounded mr-1" style="background-color: #8A0512; color :#fff;" type="submit"><i class="fa fa-trash"></i></button>
+                                                    <button class="btn btn-rounded" style="border: none;background-color: transparent;" type="submit"><img src="{{asset('button/trash.png')}}" class="mb-2"  title="Hapus"></button>
                                                 </form>
+                                                <a href="projects/leads/{{$item->KodeProject}}">
+                                                    <img src="{{asset('button/list.png')}}"  title="Prospect List">
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>

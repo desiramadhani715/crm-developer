@@ -24,9 +24,9 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-// Route::get('/', function () {
-//     return view('login');
-// });
+Route::get('/mail', function () {
+    return view('mail-prospect');
+});
 
 Route::get('/login', [LoginController::class, 'login']);
 Route::post('/postLogin', [LoginController::class, 'postLogin']);
@@ -47,6 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/prospects', [ProspectsController::class, 'index'])->name('prospect.index');
     Route::post('/prospects', [ProspectsController::class, 'filter'])->name('prospect.filter');
+    Route::post('/prospects/delete', [ProspectsController::class, 'delete_selected'])->name('prospect.delete_selected');
     Route::get('/prospects/download', [ProspectsController::class, 'excel'])->name('prospect.download');
     Route::delete('/prospects/{ProspectID}', [
         ProspectsController::class,
@@ -110,6 +111,18 @@ Route::group(['middleware' => ['auth']], function () {
         ProjectController::class,
         'destroy',
     ])->name('project.destroy');
+    Route::get('/projects/leads/{KodeProject}', [
+        ProjectController::class,
+        'leads',
+    ])->name('project.leads');
+    Route::post('/projects/leads/filter', [
+        ProjectController::class,
+        'leads_filter',
+    ])->name('project.leads.filter');
+    Route::post('/projects/leads/move', [
+        ProjectController::class,
+        'leads_move',
+    ])->name('project.leads.move');
 
     Route::get('/agent', [AgentController::class, 'index'])->name('agent.index');
     Route::post('/agent/active/{KodeAgent}', [AgentController::class, 'active'])->name('agent.active');

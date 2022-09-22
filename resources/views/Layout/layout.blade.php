@@ -83,12 +83,12 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav float-right be-icons-nav">
-                        <li class="nav-item mt-4 mr-2 mr-lg-0 namaPT" ><strong>{{Auth::user()->NamaPT}}</strong></li>
+                        <li class="nav-item mt-4 mr-2 mr-lg-0 namaPT"><strong>{{Auth::user()->NamaPT}}</strong></li>
                     </ul>
                 </div>
             </div>
         </nav>
-
+f
         <div class="be-left-sidebar" style="background-color: #fff; font-family: sans-serif;">
             <div class="left-sidebar-wrapper"><a class="left-sidebar-toggle" id="menu">Dashboard</a>
                 <div class="left-sidebar-spacer" id="menu1">

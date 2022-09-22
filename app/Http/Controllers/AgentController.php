@@ -231,9 +231,9 @@ class AgentController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-        if ($request->PhotoUser == null) {
-            $imageName = 'user.JPG';
-        } else {
+
+        $imageName = '';
+        if ($request->PhotoUser) {
             $imageName = $request->file('PhotoUser')->getClientOriginalName();
             // $request->file('PhotoUser')->move(public_path('storage/uploaded'), $imageName);
             $request->file('PhotoUser')->storeAs('public/uploaded', $imageName);
