@@ -11,6 +11,7 @@ use App\Models\agent;
 use App\Models\project;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Helper\Helper;
 
 class HomeController extends Controller
 {
@@ -39,6 +40,7 @@ class HomeController extends Controller
  */
     public function index(Request $request)
     {
+
         // $top_sales = sales::get_top_sales();
         // GET TOTAL ALL
         $total_leads = historyprospect::get_total_leads();
@@ -56,7 +58,12 @@ class HomeController extends Controller
         for($i=0; $i<count($data); $i++){
             $leadsProject = historyprospect::prospect_per_project_all($data[$i]->KodeProject);
             $leadsNewTotal = historyprospect::prospect_per_project($data[$i]->KodeProject, 'New');
-            $leadsProcessTotal = historyprospect::prospect_per_project($data[$i]->KodeProject, 'Process');
+            $leadsProcessTotal = historyprospect::prospect_per_project($data[$i]->KodeProject, 'Warm');
+            // $leadsProcessTotal = historyprospect::join('Prospect','Prospect.ProspectID','=','HistoryProspect.ProspectID')
+            //                                     ->select(DB::raw('count(HistoryProspect.ProspectID) as total'))
+            //                                     ->where('HistoryProspect.KodeProject','=',$data[$i]->KodeProject)
+            //                                     ->where('Prospect.Status','=','Warm')
+            //                                     ->get();
             $leadsClosingTotal = historyprospect::prospect_per_project($data[$i]->KodeProject, 'Closing');
             $leadsExpiredTotal = historyprospect::prospect_per_project($data[$i]->KodeProject, 'Expired');
             $leadsNotInterestedTotal = historyprospect::prospect_per_project($data[$i]->KodeProject, 'Not Interested');
@@ -71,7 +78,12 @@ class HomeController extends Controller
             for($j=0; $j<count($data[$i]->agent); $j++){
                 $data[$i]->agent[$j]->leads = historyprospect::get_prospect_agent($data[$i]->agent[$j]->KodeAgent);
                 $data[$i]->agent[$j]->leadsNew = historyprospect::prospect_per_agent($data[$i]->agent[$j]->KodeAgent, 'New');
-                $data[$i]->agent[$j]->leadsProcess = historyprospect::prospect_per_agent($data[$i]->agent[$j]->KodeAgent, 'Process');
+                $data[$i]->agent[$j]->leadsProcess = historyprospect::prospect_per_agent($data[$i]->agent[$j]->KodeAgent, 'Warm');
+                // $$data[$i]->agent[$j]->leadsProcess = historyprospect::join('Prospect','Prospect.ProspectID','=','HistoryProspect.ProspectID')
+                //                                     ->select(DB::raw('count(HistoryProspect.ProspectID) as total'))
+                //                                     ->where('HistoryProspect.KodeAgent','=',$data[$i]->agent[$j]->KodeAgent)
+                //                                     ->where('Prospect.Status','=','Warm')
+                //                                     ->get();
                 $data[$i]->agent[$j]->leadsClosing = historyprospect::prospect_per_agent($data[$i]->agent[$j]->KodeAgent, 'Closing');
                 $data[$i]->agent[$j]->leadsExpired = historyprospect::prospect_per_agent($data[$i]->agent[$j]->KodeAgent, 'Expired');
                 $data[$i]->agent[$j]->leadsNotInterested = historyprospect::prospect_per_agent($data[$i]->agent[$j]->KodeAgent, 'Not Interested');

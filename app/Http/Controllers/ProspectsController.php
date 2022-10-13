@@ -10,6 +10,7 @@ use App\Models\historyprospect;
 use App\Models\historyblast;
 use App\Models\historysales;
 use App\Models\userPT;
+use App\Models\User;
 use App\Models\sales;
 use App\Models\agent;
 use App\Models\project;
@@ -24,6 +25,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Session;
 use App\Mail\MakutaproMailProspect;
 use Illuminate\Support\Facades\Mail;
+use App\Helper\Helper;
 use \stdClass;
 
 class ProspectsController extends Controller
@@ -127,8 +129,54 @@ class ProspectsController extends Controller
         Session::forget('dateTo');
 
         $prospect_new = prospect::get_new_prospect();
-        // dd($prospect_new);
+        $prospect_cold = prospect::get_leads('Cold');
+        $prospect_warm = prospect::get_leads('Warm');
+        $prospect_hot = prospect::get_leads('Hot');
 
+        // dd(count($prospect_new),count($prospect_cold),count($prospect_warm),count($prospect_hot));
+        // dd($prospect_warm);
+         
+
+        // $prospect = prospect::join('PT','PT.KodePT','=','Prospect.KodePT')
+        //                     ->join('HistoryProspect','HistoryProspect.ProspectID','Prospect.ProspectID')
+        //                     ->select('Prospect.*','HistoryProspect.MoveDate')
+        //                     ->where('PT.UsernameKP','=',Auth::User()->UsernameKP)
+        //                     ->where('Prospect.Status','=','Process')
+        //                     ->where('Prospect.AddDate','<=','2022-04-11')
+        //                     ->get();
+        // dd(count($prospect));
+
+
+        // for ($i=0; $i < count($prospect); $i++) { 
+        //     prospect::where('ProspectID',$prospect[$i]->ProspectID)->update([
+        //         'Status' => 'Not Interested',
+        //         'StatusDate' => date(now()),
+        //         'NotInterestedID' => 10
+        //     ]);
+
+        //     historyprospect::where('ProspectID',$prospect[$i]->ProspectID)->update([
+        //         'NotInterestedDate' => date(now())
+        //     ]);
+        // }
+        // die;
+        // $prospect = prospect::join('PT','PT.KodePT','=','Prospect.KodePT')
+        //                     ->join('HistoryProspect','HistoryProspect.ProspectID','Prospect.ProspectID')
+        //                     ->select('Prospect.*','HistoryProspect.MoveDate')
+        //                     ->where('PT.UsernameKP','=',Auth::User()->UsernameKP)
+        //                     ->where('Prospect.Status','=','Warm')
+        //                     ->where('Prospect.AddDate','>=','2022-04-11')
+        //                     ->get();
+
+        // dd(count($prospect));
+
+        // for ($i=0; $i < count($prospect); $i++) { 
+        //     prospect::where('ProspectID',$prospect[$i]->ProspectID)->update([
+        //         'Status' => 'Warm',
+        //         'StatusDate' => date(now()),
+        //     ]);
+        // }
+        // die;
+        
         // $expired = DB::table('Prospect')
         //                 ->where('Status','=','Expired')
         //                 ->where('ProspectID','!=',17279)
@@ -163,180 +211,200 @@ class ProspectsController extends Controller
         // }
         // dd(count($expired));
 
-        for($i=0;$i<count($prospect_new);$i++){
-            $last_prospect = prospect::last_prospect($prospect_new[$i]->ProspectID);
-            $to_time = strtotime(now());
-            $from_time = strtotime($last_prospect[0]->MoveDate);
-            $diffTime = round(abs($to_time - $from_time) / 60,2);
-            // dd($diffTime);
+        // for($i=0;$i<count($prospect_new);$i++){
+        //     $last_prospect = prospect::last_prospect($prospect_new[$i]->ProspectID);
+        //     $to_time = strtotime(now());
+        //     $from_time = strtotime($last_prospect[0]->MoveDate);
+        //     $diffTime = round(abs($to_time - $from_time) / 60,2);
+        //     // dd($diffTime);
 
-            if($diffTime > 1440){
+        //     if($diffTime > 1440){
 
-                $pt = userPT::get_KodePT();
+        //         $pt = userPT::get_KodePT();
 
-                //BlastID terakhir
-                $LastBlastID = historyblast::last_blastID('KodeProject',$prospect_new[$i]->KodeProject);
+        //         //BlastID terakhir
+        //         $LastBlastID = historyblast::last_blastID('KodeProject',$prospect_new[$i]->KodeProject);
 
-                $sendby=[];
-                if($LastBlastID[0]->BlastID != null){
+        //         $sendby=[];
+        //         $LastBlast = historyblast::last_blast($LastBlastID[0]->BlastID);
+
+        //         if($LastBlastID[0]->BlastID != null){
                     
-                    $LastBlast = historyblast::last_blast($LastBlastID[0]->BlastID);
-                    
-                    $agent = agent::get_agent($LastBlast[0]->KodeProject);
+        //             $agent = agent::get_agent($LastBlast[0]->KodeProject);
 
-                    if(count($agent) == 1){
-                        $NextAgent = historyblast::next_agent(1,$LastBlast[0]->KodeProject);
-                    }
-                    else{
-                        $MaxSortAgent = agent::max_sort_agent($LastBlast[0]->KodeProject);
+        //             if(count($agent) == 1){
+        //                 $NextAgent = historyblast::next_agent(1,$LastBlast[0]->KodeProject);
+        //             }
+        //             else{
+        //                 $MaxSortAgent = agent::max_sort_agent($LastBlast[0]->KodeProject);
                         
-                        $MinSortAgent = agent::min_sort_agent($LastBlast[0]->KodeProject);
+        //                 $MinSortAgent = agent::min_sort_agent($LastBlast[0]->KodeProject);
                         
-                        if($LastBlast[0]->BlastAgentID == $MaxSortAgent[0]->max){
+        //                 if($LastBlast[0]->BlastAgentID == $MaxSortAgent[0]->max){
                             
-                            $NextAgent = historyblast::next_agent($MinSortAgent[0]->min,$LastBlast[0]->KodeProject);
+        //                     $NextAgent = historyblast::next_agent($MinSortAgent[0]->min,$LastBlast[0]->KodeProject);
                             
-                        }
-                        else{
-                            $NextAgent = historyblast::next_agent($LastBlast[0]->BlastAgentID+1,$LastBlast[0]->KodeProject);
-                        }
+        //                 }
+        //                 else{
+        //                     $NextAgent = historyblast::next_agent($LastBlast[0]->BlastAgentID+1,$LastBlast[0]->KodeProject);
+        //                 }
             
-                    }
+        //             }
                     
-                    $sendby = historyblast::sendby($LastBlast[0]->KodeProject);
-                }else{
+        //             $sendby = historyblast::sendby($LastBlast[0]->KodeProject);
+        //         }else{
                     
-                    $NextAgent = historyblast::next_agent(1,$LastBlast[0]->KodeProject);
-                    $sendby = historyblast::sendby($LastBlast[0]->KodeProject);
-                }
+        //             $NextAgent = historyblast::next_agent(1,$prospect_new[$i]->KodeProject);
+        //             $sendby = historyblast::sendby($prospect_new[$i]->KodeProject);
+        //         }
 
-                //Mencari Sales Terakhir
-                $NextSales=[];
-                //BlastID terakhir
-                $LastBlastID = historyblast::last_blastID('KodeAgent',$NextAgent[0]->KodeAgent);
-                // dd($LastBlastID);
-                if($LastBlastID[0]->BlastID != null){
+        //         //Mencari Sales Terakhir
+        //         $NextSales=[];
+        //         //BlastID terakhir
+        //         $LastBlastID = historyblast::last_blastID('KodeAgent',$NextAgent[0]->KodeAgent);
+        //         // dd($LastBlastID);
+        //         if($LastBlastID[0]->BlastID != null){
 
-                    $LastBlast = historyblast::last_blast($LastBlastID[0]->BlastID);
+        //             $LastBlast = historyblast::last_blast($LastBlastID[0]->BlastID);
                     
-                    $sales = historyblast::sales($NextAgent[0]->KodeAgent); // pilih sales yg aktiv aja
-                    // dd($sales);
+        //             $sales = historyblast::sales($NextAgent[0]->KodeAgent); // pilih sales yg aktiv aja
+        //             // dd($sales);
 
-                    if($LastBlast[0]->BlastSalesID < count($sales)){
-                        $NextSales = historyblast::next_sales($LastBlast[0]->BlastSalesID+1,$NextAgent[0]->KodeAgent);
+        //             if($LastBlast[0]->BlastSalesID < count($sales)){
+        //                 $NextSales = historyblast::next_sales($LastBlast[0]->BlastSalesID+1,$NextAgent[0]->KodeAgent);
 
-                    }else{
-                        $NextSales = historyblast::next_sales(1,$NextAgent[0]->KodeAgent);
-                    }
-                    // dd($NextSales);
-                }else{
+        //             }else{
+        //                 $NextSales = historyblast::next_sales(1,$NextAgent[0]->KodeAgent);
+        //             }
+        //             // dd($NextSales);
+        //         }else{
 
-                    $NextSales = historyblast::next_sales(1,$NextAgent[0]->KodeAgent);
+        //             $NextSales = historyblast::next_sales(1,$NextAgent[0]->KodeAgent);
 
-                }
+        //         }
 
-                prospect::where(['ProspectID' => $prospect_new[$i]->ProspectID])->update([
-                    'Status' => 'Expired'
-                ]);
+        //         prospect::where(['ProspectID' => $prospect_new[$i]->ProspectID])->update([
+        //             'Status' => 'Expired'
+        //         ]);
 
-                $BlastPrev = historyblast::last_blast($LastBlastID[0]->BlastID);
+        //         $BlastPrev = historyblast::last_blast($LastBlastID[0]->BlastID);
                 
-                $salesPrev = sales::select('*')->where(['KodeSales' => $BlastPrev[0]->KodeSales])->get();
-                // dd($BlastPrev);
-                 // input historyblast
-                 historyblast::create([
-                    'KodeProject' => $prospect_new[$i]->KodeProject,
-                    'ProspectID' => $prospect_new[$i]->ProspectID,
-                    'KodeAgent' => $NextAgent[0]->KodeAgent,
-                    'KodeSales' => $NextSales[0]->KodeSales,
-                    'BlastAgentID' => $NextAgent[0]->UrutProjectAgent,
-                    'BlastSalesID' => $NextSales[0]->UrutAgentSales,
-                    'LevelInputID' => 'system'
-                ]);
+        //         $salesPrev = sales::select('*')->where(['KodeSales' => $BlastPrev[0]->KodeSales])->get();
+        //         // dd($BlastPrev);
+        //          // input historyblast
+        //          historyblast::create([
+        //             'KodeProject' => $prospect_new[$i]->KodeProject,
+        //             'ProspectID' => $prospect_new[$i]->ProspectID,
+        //             'KodeAgent' => $NextAgent[0]->KodeAgent,
+        //             'KodeSales' => $NextSales[0]->KodeSales,
+        //             'BlastAgentID' => $NextAgent[0]->UrutProjectAgent,
+        //             'BlastSalesID' => $NextSales[0]->UrutAgentSales,
+        //             'LevelInputID' => 'system'
+        //         ]);
 
-                historyprospectmove::create([
-                    'ProspectID' => $prospect_new[$i]->ProspectID,
-                    'KodeProject' => $prospect_new[$i]->KodeProject,
-                    'MoveAgentID' => $NextAgent[0]->UrutProjectAgent,
-                    'KodeAgent' => $NextAgent[0]->KodeAgent,
-                    'MoveAgentIDPrev' => $BlastPrev[0]->BlastAgentID,
-                    'KodeAgentPrev' => $BlastPrev[0]->KodeAgent,
-                    'MoveSalesID' => $NextSales[0]->UrutAgentSales,
-                    'KodeSales' => $NextSales[0]->KodeSales,
-                    'MoveSalesIDPrev' => $BlastPrev[0]->BlastSalesID,
-                    'KodeSalesPrev' => $BlastPrev[0]->KodeSales,
-                ]);
+        //         historyprospectmove::create([
+        //             'ProspectID' => $prospect_new[$i]->ProspectID,
+        //             'KodeProject' => $prospect_new[$i]->KodeProject,
+        //             'MoveAgentID' => $NextAgent[0]->UrutProjectAgent,
+        //             'KodeAgent' => $NextAgent[0]->KodeAgent,
+        //             'MoveAgentIDPrev' => $BlastPrev[0]->BlastAgentID,
+        //             'KodeAgentPrev' => $BlastPrev[0]->KodeAgent,
+        //             'MoveSalesID' => $NextSales[0]->UrutAgentSales,
+        //             'KodeSales' => $NextSales[0]->KodeSales,
+        //             'MoveSalesIDPrev' => $BlastPrev[0]->BlastSalesID,
+        //             'KodeSalesPrev' => $BlastPrev[0]->KodeSales,
+        //         ]);
 
-                $moveID= historyprospectmove::moveID($prospect_new[$i]->ProspectID);
-                $numberMove = historyprospect::select('NumberMove')->where(['ProspectID' => $prospect_new[$i]->ProspectID])->get();
-                historyprospect::where(['ProspectID' => $prospect_new[$i]->ProspectID])->update([
-                    'MoveID' => $moveID[0]->MoveID,
-                    'MoveDate' => date(now()),
-                    'NumberMove' => $numberMove[0]->NumberMove+1,
-                    'KodeAgent' => $NextAgent[0]->KodeAgent,
-                    'KodeSales' => $NextSales[0]->KodeSales,
-                    'BlastAgentID' => $NextAgent[0]->UrutProjectAgent,
-                    'BlastSalesID' => $NextSales[0]->UrutAgentSales,
-                ]);
+        //         $moveID= historyprospectmove::moveID($prospect_new[$i]->ProspectID);
+        //         $numberMove = historyprospect::select('NumberMove')->where(['ProspectID' => $prospect_new[$i]->ProspectID])->get();
+        //         historyprospect::where(['ProspectID' => $prospect_new[$i]->ProspectID])->update([
+        //             'MoveID' => $moveID[0]->MoveID,
+        //             'MoveDate' => date(now()),
+        //             'NumberMove' => $numberMove[0]->NumberMove+1,
+        //             'KodeAgent' => $NextAgent[0]->KodeAgent,
+        //             'KodeSales' => $NextSales[0]->KodeSales,
+        //             'BlastAgentID' => $NextAgent[0]->UrutProjectAgent,
+        //             'BlastSalesID' => $NextSales[0]->UrutAgentSales,
+        //         ]);
 
-                historysales::create([
-                    'KodeSales'=> $NextSales[0]->KodeSales,
-                    'Notes' => 'Kamu menerima Prospect dari sales an. '.$salesPrev[0]->NamaSales.', Follow Up sekarang!',
-                    'Subject' => 'Prospect : '.$prospect_new[$i]->KodeProject.' - '.$prospect_new[$i]->NamaProspect,
-                    'KodeProject' => $prospect_new[$i]->KodeProject,
-                    'HistoryBy' => 'Developer'
-                ]);
+        //         historysales::create([
+        //             'KodeSales'=> $NextSales[0]->KodeSales,
+        //             'Notes' => 'Kamu menerima Prospect dari sales an. '.$salesPrev[0]->NamaSales.', Follow Up sekarang!',
+        //             'Subject' => 'Prospect : '.$prospect_new[$i]->KodeProject.' - '.$prospect_new[$i]->NamaProspect,
+        //             'KodeProject' => $prospect_new[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
 
-                historysales::create([
-                    'KodeSales'=> $BlastPrev[0]->KodeSales,
-                    'Notes' => 'Prospect Kamu dipindahkan ke sales an. '.$NextSales[0]->NamaSales,
-                    'Subject' => 'Prospect : '.$prospect_new[$i]->KodeProject.' - '.$prospect_new[$i]->NamaProspect,
-                    'KodeProject' => $prospect_new[$i]->KodeProject,
-                    'HistoryBy' => 'Developer'
-                ]);
+        //         historysales::create([
+        //             'KodeSales'=> $BlastPrev[0]->KodeSales,
+        //             'Notes' => 'Prospect Kamu dipindahkan ke sales an. '.$NextSales[0]->NamaSales,
+        //             'Subject' => 'Prospect : '.$prospect_new[$i]->KodeProject.' - '.$prospect_new[$i]->NamaProspect,
+        //             'KodeProject' => $prospect_new[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
 
-                historysales::create([
-                    'KodeSales'=> $BlastPrev[0]->KodeSales,
-                    'NotesDev' => $salesPrev[0]->NamaSales.' tidak follow up Prospect, Prospect dipidahkan ke Sales an. '.$NextSales[0]->NamaSales,
-                    'SubjectDev' => 'Prospect : '.$prospect_new[$i]->KodeProject.' - '.$prospect_new[$i]->NamaProspect,
-                    'KodeProject' => $prospect_new[$i]->KodeProject,
-                    'HistoryBy' => 'Sales'
-                ]);
+        //         historysales::create([
+        //             'KodeSales'=> $BlastPrev[0]->KodeSales,
+        //             'NotesDev' => $salesPrev[0]->NamaSales.' tidak follow up Prospect, Prospect dipidahkan ke Sales an. '.$NextSales[0]->NamaSales,
+        //             'SubjectDev' => 'Prospect : '.$prospect_new[$i]->KodeProject.' - '.$prospect_new[$i]->NamaProspect,
+        //             'KodeProject' => $prospect_new[$i]->KodeProject,
+        //             'HistoryBy' => 'Sales'
+        //         ]);
 
 
-                $data = historyblast::get_sales($NextSales[0]->KodeSales);
-                $nama=strtoupper($data[0]->NamaSales);
-                $telp = '62'.substr($data[0]->Hp,1);
-                $link = "https://sales-beta.makutapro.id";
+        //         $data = historyblast::get_sales($NextSales[0]->KodeSales);
+        //         $nama=strtoupper($data[0]->NamaSales);
+        //         $telp = '62'.substr($data[0]->Hp,1);
+        //         $link = "https://sales-beta.makutapro.id";
 
-                //Send WA
-                $namaprospect = $prospect_new[$i]->NamaProspect;
-                $kodeproject = $prospect_new[$i]->KodeProject;
-                $namaProject = project::where('KodeProject',$kodeproject)->get()[0];
+        //         //Send WA
+        //         $namaprospect = $prospect_new[$i]->NamaProspect;
+        //         $kodeproject = $prospect_new[$i]->KodeProject;
+        //         $namaProject = project::where('KodeProject',$kodeproject)->get()[0];
 
-                $my_apikey = "BOGY33RL8K2ZPM7LIIWI";
-                $destination = $telp; //no wa pribadi
-                $message = "Hallo $nama Anda menerima database terusan dari sales agent lain yang belum follow up an. $namaProject->NamaProject untuk project $kodeproject. Harap segera Follow Up database tersebut. \n\nKlik link dibawah ini untuk login :\n$link";
-                $api_url = "http://panel.rapiwha.com/send_message.php";
-                $api_url .= "?apikey=". urlencode ($my_apikey);
-                $api_url .= "&number=". urlencode ($destination);
-                $api_url .= "&text=". urlencode ($message);
-                $my_result_object = json_decode(file_get_contents($api_url, false));
+        //         $my_apikey = "CTO3GH4VXNVT8CKDDP7A";
+        //         $destination = $telp; //no wa pribadi
+        //         $message = "Hallo $nama Anda menerima database terusan dari sales agent lain yang belum follow up an. $namaProject->NamaProject untuk project $kodeproject. Harap segera Follow Up database tersebut. \n\nKlik link dibawah ini untuk login :\n$link";
+        //         $api_url = "http://panel.rapiwha.com/send_message.php";
+        //         $api_url .= "?apikey=". urlencode ($my_apikey);
+        //         $api_url .= "&number=". urlencode ($destination);
+        //         $api_url .= "&text=". urlencode ($message);
+        //         $my_result_object = json_decode(file_get_contents($api_url, false));
 
-                // FCM
-                $this->pushNotif($data[0]->UsernameKP, $kodeproject, $namaprospect);
+        //         // FCM
+        //         $this->pushNotif($data[0]->UsernameKP, $kodeproject, $namaprospect);
                 
-                $this->pushNotifKotlin(
-                    $data[0]->UsernameKP,
-                    $kodeproject,
-                    $namaprospect
-                );
+        //         $this->pushNotifKotlin(
+        //             $data[0]->UsernameKP,
+        //             $kodeproject,
+        //             $namaprospect
+        //         );
 
-            }elseif($diffTime > 1440 &&  Auth::user()->NamaPT=='PT. Agung Graha Persada Utama'){
-                prospect::where(['ProspectID' => $prospect_new[$i]->ProspectID])->update([
-                    'Status' => 'Expired'
-                ]);
+        //     }elseif($diffTime > 1440 &&  Auth::user()->NamaPT=='PT. Agung Graha Persada Utama'){
+        //         prospect::where(['ProspectID' => $prospect_new[$i]->ProspectID])->update([
+        //             'Status' => 'Expired'
+        //         ]);
+        //     }
+        // }
+
+        for ($i=0; $i < count($prospect_cold); $i++) { 
+            
+            if(round(abs(strtotime(now()) - strtotime($prospect_cold[$i]->FuDate)) / 60, 2) > 4320){
+                
+                $NamaProspect = strtoupper($prospect_cold[$i]->NamaProspect);
+                $NamaProject = strtoupper($prospect_cold[$i]->NamaProject);
+                $destination = '62'.substr($prospect_cold[$i]->Hp,1);
+
+                Helper::ReminderColdWA($NamaProspect,$NamaProject,$destination);
+
+                $title = 'Reminder !';
+                $body = "Hallo, Data sudah lebih dari 3 hari belum berubah status. Harap segera update status konsumen an. $NamaProspect untuk Project $NamaProject jika sudah ada progress.";
+
+                Helper::ReminderColdApp($prospect_cold[$i]->UsernameKP, $title, $body);
+
+
             }
+
         }
 
         $prospect = prospect::get_prospect();
@@ -459,7 +527,7 @@ class ProspectsController extends Controller
 
         //Send WA
 
-        $my_apikey = "BOGY33RL8K2ZPM7LIIWI";
+        $my_apikey = "CTO3GH4VXNVT8CKDDP7A";
         $destination = $telp; //no wa pribadi
         $message = "Hallo $nama Anda telah menerima database untuk sewa pada project $namaProject->NamaProject an. $namaprospect . Harap segera Follow Up database tersebut. \n\nKlik link dibawah ini untuk login :\n$link";
         $api_url = "http://panel.rapiwha.com/send_message.php";
@@ -582,7 +650,7 @@ class ProspectsController extends Controller
                 'BlastAgentID' => $NextAgent[0]->UrutProjectAgent,
                 'LevelInputID' => 'system'
             ]);
-            $data = historyblast::get_Agent($NextAgent[0]->KodeAgent);
+            $data = historyblast::get_agent($NextAgent[0]->KodeAgent);
             $nama = strtoupper($data[0]->NamaAgent);
             $telp = '62'.substr($data[0]->Hp,1);
             $link = "http://makutapro.id/agent/login.php";
@@ -682,9 +750,26 @@ class ProspectsController extends Controller
         $namaProject = project::where('KodeProject',$request->KodeProject)->get()[0];
         //Send WA
 
-        if(Auth::user()->notif_wa == 1){
+        $agent = DB::table('Agent')->select('*')->where('KodeAgent',$NextAgent[0]->KodeAgent)->get();
+        $user_agent = User::where('UsernameKP',$agent[0]->UsernameKP)->get();
+        $user_sales = User::where('UsernameKP',$NextSales[0]->UsernameKP)->get();
+        $link_apps = "https://play.google.com/store/apps/details?id=com.crm.makutapro";
+
+        if ($user_agent[0]->notif_wa == 1) {
+
+            $my_apikey = "CTO3GH4VXNVT8CKDDP7A";
+            $destination = '62'.substr($agent[0]->Hp,1); //no wa pribadi
+            $message = "Saat ini Team Anda a/n $nama menerima prospek konsumen a/n $namaprospect untuk project $namaProject->NamaProject.\nMohon untuk segera di follow up.\nTerima kasih";
+            $api_url = "http://panel.rapiwha.com/send_message.php";
+            $api_url .= "?apikey=". urlencode ($my_apikey);
+            $api_url .= "&number=". urlencode ($destination);
+            $api_url .= "&text=". urlencode ($message);
+            $my_result_object = json_decode(file_get_contents($api_url, false));
+        }
+
+        if($user_sales[0]->notif_wa == 1){
             
-            $my_apikey = "BOGY33RL8K2ZPM7LIIWI";
+            $my_apikey = "CTO3GH4VXNVT8CKDDP7A";
             $destination = $telp; //no wa pribadi
             $message = "Hallo $nama Anda telah menerima database baru an. $namaprospect untuk project $namaProject->NamaProject. Harap segera Follow Up database tersebut. \n\nKlik link dibawah ini untuk login :\n$link";
             $api_url = "http://panel.rapiwha.com/send_message.php";
@@ -693,14 +778,16 @@ class ProspectsController extends Controller
             $api_url .= "&text=". urlencode ($message);
             $my_result_object = json_decode(file_get_contents($api_url, false));
         }
-        if(Auth::user()->notif_email == 1){
+
+        if($user_sales[0]->notif_email == 1 && $user_sales[0]->Email != null){
             $data = [
+                'nama' => $nama,
                 'namaprospect'=> $namaprospect,
                 'namaproject' => $namaProject->NamaProject,
                 'link_apps' => $link_apps, 
-                'link_web' => $link_web 
+                'link_web' => $link 
             ];
-            Mail::to($request->Email)->send(new MakutaproMailProspect($data));
+            Mail::to($user_sales[0]->Email)->send(new MakutaproMailProspect($data));
         }
 
 
@@ -844,9 +931,24 @@ class ProspectsController extends Controller
         $namaProject = project::where('KodeProject',$request->KodeProject)->get()[0];
 
         //Send WA
+        
+        $user_agent = User::where('UsernameKP',$agent[0]->UsernameKP)->get();
+        $user_sales = User::where('UsernameKP',$sales[0]->UsernameKP)->get();
+        $link_apps = "https://play.google.com/store/apps/details?id=com.crm.makutapro";
 
-        if(Auth::user()->notif_wa == 1){
-            $my_apikey = 'BOGY33RL8K2ZPM7LIIWI';
+        if($user_agent[0]->notif_wa == 1){
+            $my_apikey = 'CTO3GH4VXNVT8CKDDP7A';
+            $destination = '62'.substr($agent[0]->Hp,1);  //no wa pribadi
+            $message = "Saat ini Team Anda a/n $nama menerima prospek konsumen a/n $namaprospect untuk project $namaProject->NamaProject.\nMohon untuk segera di follow up.\nTerima kasih";
+            $api_url = 'http://panel.rapiwha.com/send_message.php';
+            $api_url .= '?apikey=' . urlencode($my_apikey);
+            $api_url .= '&number=' . urlencode($destination);
+            $api_url .= '&text=' . urlencode($message);
+            $my_result_object = json_decode(file_get_contents($api_url, false));
+        }
+
+        if($user_sales[0]->notif_wa == 1){
+            $my_apikey = 'CTO3GH4VXNVT8CKDDP7A';
             $destination = $telp; //no wa pribadi
             $message = "Hallo $nama Anda telah menerima database baru an. $namaprospect untuk project $namaProject->NamaProject. Harap segera Follow Up database tersebut. \n\nKlik link dibawah ini untuk login :\n$link";
             $api_url = 'http://panel.rapiwha.com/send_message.php';
@@ -855,14 +957,16 @@ class ProspectsController extends Controller
             $api_url .= '&text=' . urlencode($message);
             $my_result_object = json_decode(file_get_contents($api_url, false));
         }
-        if(Auth::user()->notif_email == 1){
+
+        if($user_sales[0]->notif_email == 1 && $user_sales[0]->Email != null){
             $data = [
+                'nama' => $nama,
                 'namaprospect'=> $namaprospect,
                 'namaproject' => $namaProject->NamaProject,
                 'link_apps' => $link_apps, 
-                'link_web' => $link_web 
+                'link_web' => $link 
             ];
-            Mail::to($request->Email)->send(new MakutaproMailProspect($data));
+            Mail::to($user_sales[0]->Email)->send(new MakutaproMailProspect($data));
         }
 
         return redirect('prospects')->with(
@@ -972,6 +1076,7 @@ class ProspectsController extends Controller
     public function edit($ProspectID)
     {
         $prospect = prospect::data_prospect2($ProspectID);
+        // dd($prospect);
 
         $agent = DB::table('Agent')->select('*')->where('KodeProject', $prospect[0]->KodeProject)->get();
 
@@ -1063,6 +1168,7 @@ class ProspectsController extends Controller
             'PenghasilanID' => $prospect[0]->PenghasilanID,
             'RangePenghasilan' => $prospect[0]->RangePenghasilan,
             'JenisAds' => $prospect[0]->JenisAds,
+            'CatatanAdmin' => $prospect[0]->CatatanAdmin,
         ];
 
         $prospect2 = json_decode (json_encode ($data), FALSE);
@@ -1113,7 +1219,7 @@ class ProspectsController extends Controller
     
                 //Send WA
     
-                $my_apikey = "BOGY33RL8K2ZPM7LIIWI";
+                $my_apikey = "CTO3GH4VXNVT8CKDDP7A";
                 $destination = $telp; //no wa pribadi
                 $message = "Hallo $nama Anda telah menerima database baru an. $namaprospect untuk project $kodeproject. Harap segera Follow Up database tersebut. \n\nKlik link dibawah ini untuk login :\n$link";
                 $api_url = "http://panel.rapiwha.com/send_message.php";
@@ -1255,7 +1361,7 @@ class ProspectsController extends Controller
 
                 //Send WA
 
-                $my_apikey = "BOGY33RL8K2ZPM7LIIWI";
+                $my_apikey = "CTO3GH4VXNVT8CKDDP7A";
                 $destination = $telp; //no wa pribadi
                 $message = "Hallo $nama Anda telah menerima database baru an. $namaProject->NamaProject untuk project $kodeproject. Harap segera Follow Up database tersebut. \n\nKlik link dibawah ini untuk login :\n$link";
                 $api_url = "http://panel.rapiwha.com/send_message.php";
@@ -1374,7 +1480,7 @@ class ProspectsController extends Controller
 
         // // Send WA
 
-        $my_apikey = "BOGY33RL8K2ZPM7LIIWI";
+        $my_apikey = "CTO3GH4VXNVT8CKDDP7A";
         $destination = $telp; //no wa pribadi
         $message = "Hallo $nama Anda telah menerima database baru an. $namaProject->NamaProject untuk project $kodeproject. Harap segera Follow Up database tersebut. \n\nKlik link dibawah ini untuk login :\n$link";
         $api_url = "http://panel.rapiwha.com/send_message.php";

@@ -191,11 +191,11 @@
                                 <table class="table table-striped table-hover be-table-responsive table-responsive " id="table1" border="1px">
                                     <thead>
                                         <tr class="text-center">
-                                            <th class="">
+                                            {{-- <th class="">
                                                 <div class="d-flex align-items-center">
                                                     <input class="form-check-input "  type="checkbox"  id="checkAll"><br>
                                                 </div>
-                                            </th>
+                                            </th> --}}
                                             <th>No</th>
                                             <th>ID</th>
                                             <th>Nama & No. Hp</th>
@@ -217,32 +217,37 @@
                                                 @if ($item->VerifiedStatus == 0)
                                                 <tr style="background-color:rgb(71, 149, 238, 0.5);">
                                                 @else
-                                                <tr style="border-left: rgb(71, 149, 238) solid 16px;">
+                                                <tr style="border-left: #01BCF1 solid 16px;">
     
                                                 @endif
                                             @elseif($item->Status == 'Closing')
-                                            <tr style="border-left: rgb(2, 185, 57) solid 16px;">
+                                            <tr style="border-left: #77B341 solid 16px;">
                                             @elseif($item->Status == 'Expired')
-                                            <tr style="border-left: rgb(233, 140, 34) solid 16px;">
-                                            @elseif($item->Status == 'Process' and $item->Hot == 0)
-                                            <tr style="border-left: rgb(214, 113, 201) solid 16px;">
-                                            @elseif($item->Status == 'Process' and $item->Hot == 1)
-                                            <tr style="border-left: #4B0082 solid 16px;">
+                                            <tr style="border-left: #F38120 solid 16px;">
+                                            @elseif($item->Status == 'Cold')
+                                            <tr style="border-left: #277A95 solid 16px;">
+                                            @elseif($item->Status == 'Hot')
+                                            <tr style="border-left: #6E398B solid 16px;">
+                                            @elseif($item->Status == 'Warm')
+                                            <tr style="border-left: #FDB427 solid 16px;">
                                             @elseif($item->Status == 'Not Interested')
-                                            <tr style="border-left: red solid 16px;">
+                                            <tr style="border-left: #C51212 solid 16px;">
                                             @endif
-                                                <td><input class="form-check-input" type="checkbox" value="{{$item->ProspectID}}" name="prospect[]" ><br></td>
+                                                {{-- <td><input class="form-check-input" type="checkbox" value="{{$item->ProspectID}}" name="prospect[]" ><br></td> --}}
                                                 <td class="text-center">{{$loop->iteration}}</td>
                                                 <td class="text-center">{{$item->ProspectID}}</td>
                                                 <td class="text-left">
-                                                    <span>{{$item->NamaProspect}}</span><br><a href="https://api.whatsapp.com/send?phone={{substr($item->KodeNegara, 1)}}{{substr($item->Hp, 1)}}" target="_blank"><span class="card-subtitle" style="color:#6F9CD3">{{$item->Hp}}</span></a>
+                                                    @if ($item->NumberMoveProject > 0)
+                                                    <span class="mdi mdi-arrow-right-top" style="color: #6F9CD3">
+                                                    @endif
+                                                    <span style="color: black"> {{$item->NamaProspect}}</span><br><a href="https://api.whatsapp.com/send?phone={{substr($item->KodeNegara, 1)}}{{substr($item->Hp, 1)}}" target="_blank"><span class="card-subtitle" style="color:#6F9CD3">{{$item->Hp}}</span></a>
                                                 </td>
                                                 <td class="text-center">
                                                     <span>{{$item->NamaSumber}}</span><br><span class="card-subtitle">{{$item->NoteSumberData}}</span>
                                                 </td>
                                                 <td class="text-center">{{$item->NamaPlatform}}</td>
                                                 <td class="text-center">{{$item->Campaign}}</td>
-                                                <td class="text-center" data-project="{{$item->KodeProject}}">{{$item->KodeProject}}</td>
+                                                <td class="text-center" data-project="{{$item->KodeProject}}">{{$item->NamaProject}}</td>
                                                 <td class="text-left">
                                                     <span style="color:#6F9CD3">{{$item->KodeAgent}}</span><br><span class="card-subtitle">{{$item->NamaSales}}</span>
                                                 </td>

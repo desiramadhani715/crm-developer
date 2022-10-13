@@ -405,6 +405,7 @@ class AgentController extends Controller
     public function prospectmove(Request $request)
     {
         $prospectID = $request->prospect;
+        // dd($request->all());
 
         $prevAgent = agent::where(['KodeAgent' => $request->KodeAgentPrev])
             ->select('UrutAgent')

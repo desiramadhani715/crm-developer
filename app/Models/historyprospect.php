@@ -10,7 +10,7 @@ class historyprospect extends Model
 {
 
     protected $table = 'HistoryProspect';
-    protected $fillable = ['KodePT','KodeProject','ProspectID','KodeAgent','KodeSales','BlastAgentID','BlastSalesID','Email','LevelInputID','MoveID','NumberMove','MoveDate'];
+    protected $fillable = ['KodePT','KodeProjectPrev','KodeProject','ProspectID','KodeAgent','KodeSales','BlastAgentID','BlastSalesID','Email','LevelInputID','MoveID','NumberMove','NumberMoveProject','MoveDate'];
     protected $primaryKey = 'HistoryProsID';
     public $timestamps = false;
 

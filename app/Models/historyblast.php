@@ -50,7 +50,7 @@ class historyblast extends Model
         return DB::table('ProjectAgent')
                     ->leftJoin('Sales','Sales.KodeAgent','=','ProjectAgent.KodeAgent')
                     ->leftJoin('User','User.UsernameKP','=','Sales.UsernameKP')
-                    ->select('ProjectAgent.KodeAgent','ProjectAgent.UrutProjectAgent')
+                    ->select('ProjectAgent.KodeAgent','ProjectAgent.UrutProjectAgent','Agent.*')
                     ->where('ProjectAgent.UrutProjectAgent','=',$UrutProjectAgent)
                     ->where('ProjectAgent.KodeProject','=',$KodeProject)
                     ->where('User.Active','=',1)

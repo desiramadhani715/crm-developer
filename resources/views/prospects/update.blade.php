@@ -303,6 +303,14 @@
                         </select>
                     </div>
                     </div>
+                    <hr style="width: 500px">
+                    <div class="form-group row">
+                        <label class="col-12 col-sm-3 col-form-label text-sm-right" for="CatatanAdmin" >Pesan</label>
+                        <div class="col-12 col-sm-8 col-lg-6">
+                            <textarea class="form-control" id="CatatanAdmin" name="CatatanAdmin" rows="5" value="{{$p->CatatanAdmin}}"></textarea>
+                            <input type="hidden" value="{{$p->CatatanAdmin}}" id="CatatanAdmin" name="CatatanAdmin">
+                        </div>
+                        </div>
                     <div class="form-group row">
                     <label class="col-12 col-sm-3 col-form-label text-sm-right" for="" ></label>
                     <div class="col-12 col-sm-8 col-lg-6">

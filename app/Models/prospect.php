@@ -10,7 +10,7 @@ class prospect extends Model
 {
     protected $table = 'Prospect';
     protected $primaryKey = 'ProspectID';
-    protected $fillable = ['NamaProspect', 'Hp','EmailProspect', 'Message', 'SumberDataID', 'LevelInputID', 'Status', 'KodeProject', 'KodePT', 'KodeAds', 'KodePlatform','Campaign','KodeNegara','NoteSumberData'];
+    protected $fillable = ['NamaProspect', 'Hp','EmailProspect', 'Message', 'SumberDataID', 'LevelInputID', 'Status','StatusDate', 'KodeProject', 'KodePT', 'KodeAds', 'KodePlatform','Campaign','KodeNegara','NoteSumberData'];
     const CREATED_AT = 'AddDate';
     const UPDATED_AT = 'EditDate';
 
@@ -24,7 +24,7 @@ class prospect extends Model
                     ->leftJoin('tipe_unit','HistoryProspect.UnitID','=','tipe_unit.UnitID')
                     ->leftJoin('NotInterested','NotInterested.NotInterestedID','=','Prospect.NotInterestedID')
                     ->leftJoin('Sales','Sales.KodeSales','=','HistoryProspect.KodeSales')
-                    ->select('Prospect.*','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales',DB::raw('DATE(HistoryProspect.AcceptDate) AcceptDate'),'NotInterested.Alasan')
+                    ->select('Prospect.*','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales',DB::raw('DATE(HistoryProspect.AcceptDate) AcceptDate'),'NotInterested.Alasan','Project.NamaProject')
                     ->where('PT.UsernameKP','=',Auth::User()->UsernameKP)
                     ->orderBy('Prospect.ProspectID','desc')
                     ->get();
@@ -45,7 +45,6 @@ class prospect extends Model
                     ->where('HistoryProspect.KodeSales','like','%'.$KodeSales.'%')
                     ->where('HistoryProspect.KodeAgent','like','%'.$agent.'%')
                     ->where('Prospect.KodeProject','like','%'.$Project.'%')
-                    ->where('Prospect.KodeProject','like','%'.$Project.'%')
                     ->where('Prospect.Status','like','%'.$status.'%')
                     ->where('Prospect.Hot','like','%'.$hot.'%')
                     ->where(DB::raw('COALESCE(Prospect.SumberDataID,\'\')'),'like','%'.$SumberDataID.'%')
@@ -54,7 +53,7 @@ class prospect extends Model
         if($statusBetween){
             $query->whereBetween('Prospect.AddDate',[$since, $To]);
         }
-        $query->select('Prospect.*','NotInterested.Alasan','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales',DB::raw('DATE(Prospect.AddDate) AddDate'),DB::raw('DATE(Prospect.EditDate) EditDate'));
+        $query->select('Prospect.*','NotInterested.Alasan','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales',DB::raw('DATE(Prospect.AddDate) AddDate'),DB::raw('DATE(Prospect.EditDate) EditDate'),'Project.NamaProject');
         $query->where('PT.UsernameKP','=',Auth::User()->UsernameKP);
         $query->orderBy('Prospect.ProspectID','desc');
        return $query->get();
@@ -411,6 +410,19 @@ class prospect extends Model
         return DB::table('tipe_unit')
                     ->select('UnitID','UnitName')
                     ->where('ProjectCode','=',$KodeProject)
+                    ->get();
+    }
+
+    public static function get_leads($status){
+        return DB::table('Prospect')
+                    ->join('HistoryProspect','HistoryProspect.ProspectID','=','Prospect.ProspectID')
+                    ->join('Project','Project.KodeProject','=','HistoryProspect.KodeProject')
+                    ->join('PT','PT.KodePT','Prospect.KodePT')
+                    ->join('Fu','Fu.ProspectID','=','Prospect.ProspectID')
+                    ->join('Sales','HistoryProspect.KodeSales','=','Sales.KodeSales')
+                    ->where('Prospect.Status','=',$status)
+                    ->where('PT.UsernameKP','=',Auth::user()->UsernameKP)
+                    ->select('Prospect.*','HistoryProspect.KodeSales','Fu.FuDate','Sales.UsernameKP','Sales.Hp','Project.KodeProject','Project.NamaProject')
                     ->get();
     }
 

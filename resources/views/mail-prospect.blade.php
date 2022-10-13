@@ -30,10 +30,7 @@
     <div class="container">
         <div class="row mb-5">
             <div class="col-12 col-md-12 col-lg-8 ml-5">
-                {{-- <p>Hallo desi Anda telah terdaftar sebagai Sales dengan nama koordinator pic untuk project makuta, berikut akses untuk login : </p>
-                <p>Username : username</p>
-                <p>Password : 23423 </p>  --}}
-                <p>menerima database baru an. {{$data['namaprospect']}} untuk project {{$data['namaproject']}}. Harap segera Follow Up database tersebut. Klik link dibawah ini untuk login :"</p>
+                <p>Hallo {{$data['namaprospect']}} anda menerima database baru an. {{$data['namaprospect']}} untuk project {{$data['namaproject']}}. Harap segera Follow Up database tersebut. Klik link dibawah ini untuk login :</p>
                 <p>Link Aplikasi : <a href="{{$data['link_apps']}}">{{$data['link_apps']}}</a></p>
                 <p>Link Website  : <a href="{{$data['link_web']}}">{{$data['link_web']}}</a> </p> 
             </div>
