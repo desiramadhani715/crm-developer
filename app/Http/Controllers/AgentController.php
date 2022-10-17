@@ -139,25 +139,11 @@ class AgentController extends Controller
     {
         $data = agent::get_data_agent();
         
-        $closing_amount = agent::get_closing_amount(Auth::user()->UsernameKP);
-        
-        //ubah object ke dalam bentuk array
-        $closing = [];
-        $ind = 0;
-        foreach ($closing_amount as $item) {
-            $closing[] = $closing_amount[$ind]->total;
-            $ind++;
-        }
-        $tamp = count($data) - count($closing_amount);
-        //memberi nilai 0 pada agent yang belum mempunyai prospect
-        if (count($data) != count($closing_amount)) {
-            for ($i = 0; $i < $tamp; $i++) {
-                $closing[] = '0';
-            }
-        }
         $agent = [];
         $index = 0;
         foreach ($data as $item) {
+            $closing_amount = agent::get_closing_amount($data[$index]->KodeAgent);
+
             $agent[] = [
                 'KodeAgent' => $data[$index]->KodeAgent,
                 'NamaAgent' => $data[$index]->NamaAgent,
@@ -171,7 +157,7 @@ class AgentController extends Controller
                 'Hp' => $data[$index]->Hp,
                 'PasswordKP' => $data[$index]->PasswordKP,
                 'PhotoUser' => $data[$index]->PhotoUser,
-                'total' => $closing[$index],
+                'total' => $closing_amount[0]->total,
                 'Active' => $data[$index]->Active,
             ];
             $index++;

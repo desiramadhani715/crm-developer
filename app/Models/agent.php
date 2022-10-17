@@ -16,17 +16,15 @@ class agent extends Model
     const CREATED_AT = 'JoinDate';
     const UPDATED_AT = 'EditDate';
 
-    public static function get_closing_amount($UsernameKP){
-        $closingAm = DB::table('HistoryProspect')
-                        ->join('PT','PT.KodePT','=','HistoryProspect.KodePT')
-                        ->join('Project','Project.KodeProject','=','HistoryProspect.KodeProject')
-                        ->join('Agent','Agent.KodeAgent','=','HistoryProspect.KodeAgent')
-                        ->select(DB::raw('sum(HistoryProspect.ClosingAmount) as total'),'Agent.KodeAgent')
-                        ->where('PT.UsernameKP','=',$UsernameKP)
-                        ->groupBy('HistoryProspect.KodeAgent')
-                        ->orderBy('HistoryProspect.KodeAgent','asc')
-                        ->get();
-        return $closingAm;
+    public static function get_closing_amount($KodeAgent){
+        return DB::table('HistoryProspect')
+                ->leftJoin('PT','PT.KodePT','=','HistoryProspect.KodePT')
+                ->leftJoin('Project','Project.KodeProject','=','HistoryProspect.KodeProject')
+                ->leftJoin('Agent','Agent.KodeAgent','=','HistoryProspect.KodeAgent')
+                ->select(DB::raw('sum(HistoryProspect.ClosingAmount) as total'))
+                ->where('PT.UsernameKP','=',Auth::user()->UsernameKP)
+                ->where('Agent.KodeAgent','=',$KodeAgent)
+                ->get();
     }
 
     public static function get_closing_amount_sales($UsernameKP){

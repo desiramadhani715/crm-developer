@@ -157,6 +157,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/notInterested', [NotInterestedController::class, 'index'])->name('notinterested.index');
     Route::resource('unit', UnitController::class);
+    Route::resource('campaign', CampaignController::class);
 
 
     Route::get('/agent/sales/{KodeAgent}', [SalesController::class, 'index'])->name('agent.sales.index');

@@ -125,6 +125,9 @@ f
                                 <li class="mx-3 my-1  {{Route::is('unit*') ? 'active2' : ''}}">
                                     <a class="nav-link" href="{{route('unit.index')}}" ><i class="icon mdi mdi-map"></i>Unit Type</a>
                                 </li>
+                                <li class="mx-3 my-1  {{Route::is('campaign*') ? 'active2' : ''}}">
+                                    <a class="nav-link" href="{{route('campaign.index')}}" ><i class="icon mdi mdi-campaign"></i>Campaign</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
