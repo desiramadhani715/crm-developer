@@ -253,7 +253,7 @@
                                                 </td>
                                                 <td class="text-center">{{$item->Status}} <br><small class="card-subtitle" style="font-size: 11px;">{{!empty($item->Alasan) ? $item->Alasan : ''}}</small></td>
                                                 <td class="text-center">{{date_format(date_create($item->AddDate), "d/m/Y H:i:s")}}</td>
-                                                <td class="text-center">{{$item->Status == "New" || $item->Status == "Expired" ? "" : date('d-m-Y', strtotime($item->AcceptDate))}}</td>
+                                                <td class="text-center">{{$item->Status == "New" || $item->Status == "Expired" ? "" : date_format(date_create($item->AcceptDate), "d/m/Y H:i:s")}}</td>
                                                 <td class="text-center">
                                                     <span style="color:#6F9CD3">{{$item->UnitName}}</span><br><span class="card-subtitle">{{$item->ClosingDate == "0000-00-00 00:00:00" || $item->ClosingDate == null ? "" : date('d-m-Y', strtotime($item->ClosingDate))}}</span>
                                                 </td>

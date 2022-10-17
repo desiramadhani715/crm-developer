@@ -24,7 +24,7 @@ class prospect extends Model
                     ->leftJoin('tipe_unit','HistoryProspect.UnitID','=','tipe_unit.UnitID')
                     ->leftJoin('NotInterested','NotInterested.NotInterestedID','=','Prospect.NotInterestedID')
                     ->leftJoin('Sales','Sales.KodeSales','=','HistoryProspect.KodeSales')
-                    ->select('Prospect.*','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales',DB::raw('DATE(HistoryProspect.AcceptDate) AcceptDate'),'NotInterested.Alasan','Project.NamaProject')
+                    ->select('Prospect.*','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales','NotInterested.Alasan','Project.NamaProject')
                     ->where('PT.UsernameKP','=',Auth::User()->UsernameKP)
                     ->orderBy('Prospect.ProspectID','desc')
                     ->get();
@@ -53,7 +53,7 @@ class prospect extends Model
         if($statusBetween){
             $query->whereBetween('Prospect.AddDate',[$since, $To]);
         }
-        $query->select('Prospect.*','NotInterested.Alasan','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales',DB::raw('DATE(Prospect.AddDate) AddDate'),DB::raw('DATE(Prospect.EditDate) EditDate'),'Project.NamaProject');
+        $query->select('Prospect.*','NotInterested.Alasan','SumberData.NamaSumber','SumberPlatform.NamaPlatform','HistoryProspect.*','tipe_unit.UnitName','Sales.NamaSales',DB::raw('DATE(Prospect.EditDate) EditDate'),'Project.NamaProject');
         $query->where('PT.UsernameKP','=',Auth::User()->UsernameKP);
         $query->orderBy('Prospect.ProspectID','desc');
        return $query->get();

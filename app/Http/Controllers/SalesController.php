@@ -250,7 +250,16 @@ class SalesController extends Controller
         $api_url .= "&number=". urlencode ($destination);
         $api_url .= "&text=". urlencode ($message);
         $my_result_object = json_decode(file_get_contents($api_url, false));
-
+        
+        $nama_agent=strtoupper($Agent->NamaAgent);
+        $destination = '62'.substr($Agent->Hp,1);; 
+        $message = "Hallo $nama_agent, Team anda atas nama $nama baru saja terdaftar sebagai Sales Kalindoland di SISKA pada Project $project->NamaProject. Silahkan Hubungi team anda tersebut untuk memastikan Akun Login SISKA sudah di terima melalui Whatsapp.";
+        $api_url = "http://panel.rapiwha.com/send_message.php";
+        $api_url .= "?apikey=". urlencode ($my_apikey);
+        $api_url .= "&number=". urlencode ($destination);
+        $api_url .= "&text=". urlencode ($message);
+        $my_result_object = json_decode(file_get_contents($api_url, false));
+        
         $data = [
             'nama'=> $nama,
             'pic' => $Agent->Pic,

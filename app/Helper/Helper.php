@@ -117,9 +117,8 @@ class Helper
         return $data;
     }
 
-    public static function ReminderColdWA($NamaProspect, $NamaProject, $destination){
+    public static function SendWA($destination, $message){
         $my_apikey = "CTO3GH4VXNVT8CKDDP7A";
-        $message = "Hallo, Data sudah lebih dari 3 hari belum berubah status. Harap segera update status konsumen an. $NamaProspect untuk Project $NamaProject jika sudah ada progress.";
         $api_url = "http://panel.rapiwha.com/send_message.php";
         $api_url .= "?apikey=". urlencode ($my_apikey);
         $api_url .= "&number=". urlencode ($destination);
@@ -127,7 +126,7 @@ class Helper
         $my_result_object = json_decode(file_get_contents($api_url, false));
     }
 
-    public static function ReminderColdApp($UsernameKP, $title, $body){
+    public static function PushNotif($UsernameKP, $title, $body){
         $url = 'https://fcm.googleapis.com/fcm/send';
         $FcmToken = DB::table('TokenFCM')
             ->select('TokenFCM')
