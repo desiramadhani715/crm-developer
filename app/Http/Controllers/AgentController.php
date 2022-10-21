@@ -238,7 +238,7 @@ class AgentController extends Controller
 
         User::create([
             'UsernameKP' => $request->UsernameKP,
-            'PasswordKP' => md5($request->PasswordKP),
+            'PasswordKP' => bcrypt($request->PasswordKP),
             'Email' => $request->Email,
             'LevelUserID' => 'agent',
             'Active' => 1,
@@ -455,6 +455,7 @@ class AgentController extends Controller
                 ])->update([
                     'MoveID' => $moveID[0]->MoveID,
                     'NumberMove' => $numberMove[0]->NumberMove + 1,
+                    'MoveDate' => date('m/d/Y h:i:s'),
                     'KodeAgent' => $move[0]->KodeAgent,
                     'KodeSales' => $move[0]->KodeSales,
                 ]);

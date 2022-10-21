@@ -14,6 +14,7 @@ use App\Models\sales;
 use App\Models\agent;
 use App\Models\project;
 use App\Models\RemindStatus;
+use App\Models\Fu;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -209,8 +210,7 @@ class ProspectsController extends Controller
         //         'AcceptStatus' => 1
         //     ]);
         // }
-        // dd(count($expired));
-
+        
         // for($i=0;$i<count($prospect_new);$i++){
         //     $last_prospect = prospect::last_prospect($prospect_new[$i]->ProspectID);
         //     $to_time = strtotime(now());
@@ -292,6 +292,7 @@ class ProspectsController extends Controller
         //         ]);
 
         //         $BlastPrev = historyblast::last_blast($LastBlastID[0]->BlastID);
+        //         dd($BlastPrev);
                 
         //         $salesPrev = sales::select('*')->where(['KodeSales' => $BlastPrev[0]->KodeSales])->get();
         //         // dd($BlastPrev);
@@ -391,19 +392,26 @@ class ProspectsController extends Controller
         //     }
         // }
 
+        // dd($prospect_cold);
+
         // for ($i=0; $i < count($prospect_cold); $i++) { 
 
         //     $NamaProspect = strtoupper($prospect_cold[$i]->NamaProspect);
         //     $NamaProject = strtoupper($prospect_cold[$i]->NamaProject);
         //     $destination = '62'.substr($prospect_cold[$i]->Hp,1);
         //     $title = 'Reminder !';
+        //     $ProspectID = $prospect_cold[$i]->ProspectID;
 
         //     $status_remind = RemindStatus::where('ProspectID',$prospect_cold[$i]->ProspectID)
         //                         ->where('KodeSales',$prospect_cold[$i]->KodeSales)
         //                         ->get();
 
-        //     if(round(abs(strtotime(now()) - strtotime($prospect_cold[$i]->FuDate)) / 60, 2) > 2880){
-                
+        //     $FuDate = DB::table('Fu')
+        //                 ->where('FuID',DB::raw("(select max(`FuID`) from Fu where `ProspectID` = '$ProspectID')"))
+        //                 ->get()[0]->FuDate;
+            
+
+        //     if(round(abs(strtotime(now()) - strtotime($FuDate)) / 60, 2) > 2880){
         //         if(count($status_remind) == 0){
         //             RemindStatus::create([
         //                 'KodeSales' => $prospect_cold[$i]->KodeSales,
@@ -436,8 +444,7 @@ class ProspectsController extends Controller
 
         //     }
 
-        //     else if(round(abs(strtotime(now()) - strtotime($prospect_cold[$i]->FuDate)) / 60, 2) > 5760){
-                
+        //     if(round(abs(strtotime(now()) - strtotime($FuDate)) / 60, 2) > 5760){
         //         if(!$status_remind->ColdDay6){
         //             $body = "Apakah Anda sudah follow up konsumen atas nama $NamaProspect untuk Project $NamaProject  yang berstatus COLD, agar mengetahui Promo dan Keunggulan Produk?";
 
@@ -460,136 +467,233 @@ class ProspectsController extends Controller
         //     }
 
         // }
+        
+        // dd($prospect_warm);
 
-        for ($i=0; $i < count($prospect_warm); $i++) { 
-            $NamaProspect = strtoupper($prospect_warm[$i]->NamaProspect);
-            $NamaProject = strtoupper($prospect_warm[$i]->NamaProject);
-            $destination = '62'.substr($prospect_warm[$i]->Hp,1);
-            $title = 'Reminder !';
-            $body = "Apakah Anda sudah follow up konsumen atas nama $NamaProspect untuk Project $NamaProject  yang berstatus WARM, agar dapat mengundang ke Marketing Gallery ?";
-
-            $status_remind = RemindStatus::where('ProspectID',$prospect_cold[$i]->ProspectID)
-                                            ->where('KodeSales',$prospect_cold[$i]->KodeSales)
-                                            ->get();
-
-            if(is_null($status_remind)){
-                RemindStatus::create([
-                    'KodeSales' => $prospect_cold[$i]->KodeSales,
-                    'ProspectID' => $prospect_warm[$i]->ProspectID
-                ]);
-            }
+        // for ($i=0; $i < count($prospect_warm); $i++) { 
             
-            $status_remind = RemindStatus::where('ProspectID',$prospect_cold[$i]->ProspectID)
-                                            ->where('KodeSales',$prospect_cold[$i]->KodeSales)
-                                            ->select('*',DB::raw('MAX(id) as id'))
-                                            ->get()[0];
+        //     $NamaProspect = strtoupper($prospect_warm[$i]->NamaProspect);
+        //     $NamaProject = strtoupper($prospect_warm[$i]->NamaProject);
+        //     $destination = '62'.substr($prospect_warm[$i]->Hp,1);
+        //     $title = 'Reminder !';
+        //     $body = "Apakah Anda sudah follow up konsumen atas nama $NamaProspect untuk Project $NamaProject  yang berstatus WARM, agar dapat mengundang ke Marketing Gallery ?";
 
-            if(round(abs(strtotime(now()) - strtotime($prospect_warm[$i]->StatusDate)) / 60, 2) > 5760){
+        //     $status_remind = RemindStatus::where('ProspectID',$prospect_warm[$i]->ProspectID)
+        //                                     ->where('KodeSales',$prospect_warm[$i]->KodeSales)
+        //                                     ->get();
+
+        //     // dd($status_remind);
+        //     if(count($status_remind) == 0){
+        //         RemindStatus::create([
+        //             'KodeSales' => $prospect_warm[$i]->KodeSales,
+        //             'ProspectID' => $prospect_warm[$i]->ProspectID
+        //         ]);
+        //     }
+            
+        //     $status_remind = RemindStatus::where('ProspectID',$prospect_warm[$i]->ProspectID)
+        //                                     ->where('KodeSales',$prospect_warm[$i]->KodeSales)
+        //                                     ->select('*',DB::raw('MAX(id) as id'))
+        //                                     ->get()[0];
+
+        //     // dd($status_remind);
+
+        //     if(round(abs(strtotime(now()) - strtotime($prospect_warm[$i]->StatusDate)) / 60, 2) > 5760 && !$status_remind->WarmDay5){
+        //         // dd('warmday5');
+
+        //         Helper::SendWA($destination, $body);
+
+        //         Helper::PushNotif($prospect_warm[$i]->UsernameKP, $title, $body);
+
+        //         historysales::create([
+        //             'KodeSales'=> $prospect_warm[$i]->KodeSales,
+        //             'Notes' => $body,
+        //             'Subject' => $title,
+        //             'KodeProject' => $prospect_warm[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
+
+        //         $status_remind->WarmDay5 = true;
+        //         $status_remind->save();
+
+        //     }
+
+        //     if(round(abs(strtotime(now()) - strtotime($prospect_warm[$i]->StatusDate)) / 60, 2) > 12960 && !$status_remind->WarmDay10){
+        //         // dd('warmday10');
+        //         Helper::SendWA($destination, $body);
+
+        //         Helper::PushNotif($prospect_warm[$i]->UsernameKP, $title, $body);
+
+        //         historysales::create([
+        //             'KodeSales'=> $prospect_warm[$i]->KodeSales,
+        //             'Notes' => $body,
+        //             'Subject' => $title,
+        //             'KodeProject' => $prospect_warm[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
+
+        //         $status_remind->WarmDay10 = true;
+        //         $status_remind->save();
+        //     }
+
+        //     if(round(abs(strtotime(now()) - strtotime($prospect_warm[$i]->StatusDate)) / 60, 2) > 20160 && !$status_remind->WarmDay15){
+        //         // dd('warmday15');
+        //         Helper::SendWA($destination, $body);
+
+        //         Helper::PushNotif($prospect_warm[$i]->UsernameKP, $title, $body);
+
+        //         historysales::create([
+        //             'KodeSales'=> $prospect_warm[$i]->KodeSales,
+        //             'Notes' => $body,
+        //             'Subject' => $title,
+        //             'KodeProject' => $prospect_warm[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
+
+        //         $status_remind->WarmDay15 = true;
+        //         $status_remind->save();
+
+        //     }
+
+        //     if(round(abs(strtotime(now()) - strtotime($prospect_warm[$i]->StatusDate)) / 60, 2) > 25920 && !$status_remind->WarmDay19){
+        //         // dd('warmday19');
+        //         $body = "Apakah Anda sudah follow up konsumen atas nama $NamaProspect untuk Project $NamaProject ? Dikarenakan Sudah 14 hari berstatus WARM. untuk menghindari status berubah menjadi Not Interested secara otomatis";
+
+        //         Helper::SendWA($destination, $body);
+
+        //         Helper::PushNotif($prospect_warm[$i]->UsernameKP, $title, $body);
+
+        //         historysales::create([
+        //             'KodeSales'=> $prospect_warm[$i]->KodeSales,
+        //             'Notes' => $body,
+        //             'Subject' => $title,
+        //             'KodeProject' => $prospect_warm[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
+
+        //         $status_remind->WarmDay19 = true;
+        //         $status_remind->save();
                 
-                if(!$status_remind->WarmDay5){
-                    $body = "Apakah Anda sudah follow up konsumen atas nama $NamaProspect untuk Project $NamaProject  yang berstatus WARM, agar mengetahui Promo dan Keunggulan Produk?";
+        //     }
 
-                    Helper::SendWA($destination, $body);
-    
-                    Helper::PushNotif($prospect_warm[$i]->UsernameKP, $title, $body);
-    
-                    historysales::create([
-                        'KodeSales'=> $prospect_warm[$i]->KodeSales,
-                        'Notes' => $body,
-                        'Subject' => $title,
-                        'KodeProject' => $prospect_warm[$i]->KodeProject,
-                        'HistoryBy' => 'Developer'
-                    ]);
+        //     if ($status_remind->WarmDay19) {
+        //         // dd("move");
+        //         historyprospect::where(['ProspectID'=>$prospect_warm[$i]->ProspectID])->update([
+        //             'NotInterestedDate' => date('Y-m-d H:i:s')
+        //         ]);
+        //         Prospect::where(['ProspectID' => $prospect_warm[$i]->ProspectID])->update([
+        //             'EditBy' => 'system',
+        //             'Status' => 'Not Interested',
+        //             'NotInterestedID' => 10,
+        //         ]);
+        //     }
 
-                    $status_remind->WarmDay5 = true;
-                    $status_remind->save();
-                }
+        // }
 
-            }
-
-            else if(round(abs(strtotime(now()) - strtotime($prospect_warm[$i]->StatusDate)) / 60, 2) > 12960){
-                
-                if(!$status_remind->WarmDay10){
-
-                    Helper::SendWA($destination, $body);
-    
-                    Helper::PushNotif($prospect_warm[$i]->UsernameKP, $title, $body);
-    
-                    historysales::create([
-                        'KodeSales'=> $prospect_warm[$i]->KodeSales,
-                        'Notes' => $body,
-                        'Subject' => $title,
-                        'KodeProject' => $prospect_warm[$i]->KodeProject,
-                        'HistoryBy' => 'Developer'
-                    ]);
-
-                    $status_remind->WarmDay10 = true;
-                    $status_remind->save();
-                }
-            }
-
-            else if(round(abs(strtotime(now()) - strtotime($prospect_warm[$i]->StatusDate)) / 60, 2) > 20160){
-                
-                if(!$status_remind->WarmDay15){
-
-                    Helper::SendWA($destination, $body);
-    
-                    Helper::PushNotif($prospect_warm[$i]->UsernameKP, $title, $body);
-    
-                    historysales::create([
-                        'KodeSales'=> $prospect_warm[$i]->KodeSales,
-                        'Notes' => $body,
-                        'Subject' => $title,
-                        'KodeProject' => $prospect_warm[$i]->KodeProject,
-                        'HistoryBy' => 'Developer'
-                    ]);
-
-                    $status_remind->WarmDay15 = true;
-                    $status_remind->save();
-                }
-            }
-
-            else if(round(abs(strtotime(now()) - strtotime($prospect_warm[$i]->StatusDate)) / 60, 2) > 25920){
-                
-                if(!$status_remind->WarmDay19){
-                    
-                    $body = "Apakah Anda sudah follow up konsumen atas nama $NamaProspect untuk Project $NamaProject ? Dikarenakan Sudah 14 hari berstatus WARM. untuk menghindari status berubah menjadi Not Interested secara otomatis";
-
-                    Helper::SendWA($destination, $body);
-    
-                    Helper::PushNotif($prospect_warm[$i]->UsernameKP, $title, $body);
-    
-                    historysales::create([
-                        'KodeSales'=> $prospect_warm[$i]->KodeSales,
-                        'Notes' => $body,
-                        'Subject' => $title,
-                        'KodeProject' => $prospect_warm[$i]->KodeProject,
-                        'HistoryBy' => 'Developer'
-                    ]);
-
-                    $status_remind->WarmDay19 = true;
-                    $status_remind->save();
-                }
-            }
-
-            else{
-                if ($status_remind->WarmDay19) {
-                    historyprospect::where(['ProspectID'=>$ProspectID])->update([
-                        'NotInterestedDate' => date('Y-m-d H:i:s')
-                    ]);
-                    Prospect::where(['ProspectID' => $ProspectID])->update([
-                        'EditBy' => 'system',
-                        'Status' => 'Not Interested',
-                        'NotInterestedID' => 10,
-                    ]);
-                }
-                // dump($prospect_warm[0]);
-            }
-
-        }
-
+        // dd($prospect_hot);
         // for($i=0; $i<count($prospect_hot); $i++){
-        //     if()
+
+        //     $NamaProspect = strtoupper($prospect_hot[$i]->NamaProspect);
+        //     $NamaProject = strtoupper($prospect_hot[$i]->NamaProject);
+        //     $destination = '62'.substr($prospect_hot[$i]->Hp,1);
+        //     $title = 'Reminder !';
+        //     $body = "Apakah anda sudah follow up hot prospect atas nama $NamaProject untuk closing?";
+
+        //     $status_remind = RemindStatus::where('ProspectID',$prospect_hot[$i]->ProspectID)
+        //                                     ->where('KodeSales',$prospect_hot[$i]->KodeSales)
+        //                                     ->get();
+
+        //     // dd($status_remind);
+        //     if(count($status_remind) == 0){
+        //         RemindStatus::create([
+        //             'KodeSales' => $prospect_hot[$i]->KodeSales,
+        //             'ProspectID' => $prospect_hot[$i]->ProspectID
+        //         ]);
+        //     }
+            
+        //     $status_remind = RemindStatus::where('ProspectID',$prospect_hot[$i]->ProspectID)
+        //                                     ->where('KodeSales',$prospect_hot[$i]->KodeSales)
+        //                                     ->select('*',DB::raw('MAX(id) as id'))
+        //                                     ->get()[0];
+
+        //     // dd($status_remind);
+
+        //     if(round(abs(strtotime(now()) - strtotime($prospect_hot[$i]->StatusDate)) / 60, 2) > 5760 && !$status_remind->HotDay5){
+        //         // dd('hotday5');
+
+        //         Helper::SendWA($destination, $body);
+
+        //         Helper::PushNotif($prospect_hot[$i]->UsernameKP, $title, $body);
+
+        //         historysales::create([
+        //             'KodeSales'=> $prospect_hot[$i]->KodeSales,
+        //             'Notes' => $body,
+        //             'Subject' => $title,
+        //             'KodeProject' => $prospect_hot[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
+
+        //         $status_remind->HotDay5 = true;
+        //         $status_remind->save();
+
+        //     }
+
+        //     if(round(abs(strtotime(now()) - strtotime($prospect_hot[$i]->StatusDate)) / 60, 2) > 12960 && !$status_remind->HotDay10){
+        //         // dd('hotday10');
+        //         Helper::SendWA($destination, $body);
+
+        //         Helper::PushNotif($prospect_hot[$i]->UsernameKP, $title, $body);
+
+        //         historysales::create([
+        //             'KodeSales'=> $prospect_hot[$i]->KodeSales,
+        //             'Notes' => $body,
+        //             'Subject' => $title,
+        //             'KodeProject' => $prospect_hot[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
+
+        //         $status_remind->HotDay10 = true;
+        //         $status_remind->save();
+        //     }
+
+        //     if(round(abs(strtotime(now()) - strtotime($prospect_hot[$i]->StatusDate)) / 60, 2) > 20160 && !$status_remind->HotDay15){
+        //         // dd('hotday15');
+        //         Helper::SendWA($destination, $body);
+
+        //         Helper::PushNotif($prospect_hot[$i]->UsernameKP, $title, $body);
+
+        //         historysales::create([
+        //             'KodeSales'=> $prospect_hot[$i]->KodeSales,
+        //             'Notes' => $body,
+        //             'Subject' => $title,
+        //             'KodeProject' => $prospect_hot[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
+
+        //         $status_remind->HotDay15 = true;
+        //         $status_remind->save();
+
+        //     }
+
+        //     if(round(abs(strtotime(now()) - strtotime($prospect_hot[$i]->StatusDate)) / 60, 2) > 25920 && !$status_remind->HotDay19){
+        //         // dd('hotday19');
+        //         $body = "Apakah Anda sudah follow up konsumen atas nama $NamaProspect untuk Project $NamaProject ? Dikarenakan Sudah 14 hari berstatus WARM. untuk menghindari status berubah menjadi Not Interested secara otomatis";
+
+        //         Helper::SendWA($destination, $body);
+
+        //         Helper::PushNotif($prospect_hot[$i]->UsernameKP, $title, $body);
+
+        //         historysales::create([
+        //             'KodeSales'=> $prospect_hot[$i]->KodeSales,
+        //             'Notes' => $body,
+        //             'Subject' => $title,
+        //             'KodeProject' => $prospect_hot[$i]->KodeProject,
+        //             'HistoryBy' => 'Developer'
+        //         ]);
+
+        //         $status_remind->HotDay19 = true;
+        //         $status_remind->save();
+                
+        //     }
         // }
         
 

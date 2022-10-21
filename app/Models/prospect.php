@@ -414,15 +414,15 @@ class prospect extends Model
     }
 
     public static function get_leads($status){
-        return DB::table('Prospect')
-                    ->join('HistoryProspect','HistoryProspect.ProspectID','=','Prospect.ProspectID')
-                    ->join('Project','Project.KodeProject','=','HistoryProspect.KodeProject')
-                    ->join('PT','PT.KodePT','Prospect.KodePT')
-                    ->join('Fu','Fu.ProspectID','=','Prospect.ProspectID')
+        return DB::table('HistoryProspect')
+                    ->join('Prospect','Prospect.ProspectID','=','HistoryProspect.ProspectID')
+                    ->leftJoin('Project','Project.KodeProject','=','HistoryProspect.KodeProject')
+                    ->leftJoin('PT','PT.KodePT','HistoryProspect.KodePT')
+                    // ->innerJoin('Fu','Fu.ProspectID','=','HistoryProspect.ProspectID')
                     ->join('Sales','HistoryProspect.KodeSales','=','Sales.KodeSales')
                     ->where('Prospect.Status','=',$status)
                     ->where('PT.UsernameKP','=',Auth::user()->UsernameKP)
-                    ->select('Prospect.*','HistoryProspect.KodeSales','Fu.FuDate','Sales.UsernameKP','Sales.Hp','Project.KodeProject','Project.NamaProject')
+                    ->select('Prospect.*','HistoryProspect.ProspectID','HistoryProspect.KodeSales','Sales.UsernameKP','Sales.Hp','Project.KodeProject','Project.NamaProject')
                     ->get();
     }
 
